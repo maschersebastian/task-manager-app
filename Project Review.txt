@@ -1,0 +1,12 @@
+Wie unterstützt uns Srum?
+--> Scrum hilft uns unsere Idden und Gedanken zu strukturieren und unsere Projekte effiezient zu strukturieren. Durch die Rollenverteilung kann man klar die Aufgaben den verschiedenen Bereichen und Personen zuteilen
+
+Wie behindert uns Scrum?
+--> es gibt kein zentrales "Diskussionsforum" deswegen können dadurch manche Information nicht den Empfänger erreichen oder an den flaschen Empänger gesendet werden
+
+Wo stehen wir?
+--> wir haben unsere wichtigsten Tasks erledigt "P0" und haben jetzt die Grundstruktur unseres Taskmanagers aufgebaut. Unser Taskmanager ist bereits in der Lage zu Erstelle, Abschließen, Deadline setzen, Priorisierung und Übersicht
+  
+
+Was machen wir als nächstes?
+--> als nächstes beginnen wir damit unsere Taskmanager mit weiter Essenziellen Funktionen auzustatten und uns dann um unsere wenig Priorisierteren Aufgaben kümmern. Außerdem werden wir den Gesamten Taskmanager dann als eine IOS App implementieren
