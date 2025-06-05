@@ -294,14 +294,46 @@ function updateLanguage() {
     if (repeatLabel) repeatLabel.textContent = currentLanguage === 'de' ? 'Wiederholen' : 'Repeat';
     
     // Update repeat button labels
-    const repeatButtons = document.querySelectorAll('.repeat-btn span');
-    if (repeatButtons.length >= 5) {
-        repeatButtons[0].textContent = currentLanguage === 'de' ? 'Täglich' : 'Daily';
-        repeatButtons[1].textContent = currentLanguage === 'de' ? 'Wöchentlich' : 'Weekly';
-        repeatButtons[2].textContent = currentLanguage === 'de' ? 'Monatlich' : 'Monthly';
-        repeatButtons[3].textContent = currentLanguage === 'de' ? 'Jährlich' : 'Yearly';
-        repeatButtons[4].textContent = currentLanguage === 'de' ? 'Eigene' : 'Custom';
-    }
+    const repeatButtons = document.querySelectorAll('.repeat-btn');
+    repeatButtons.forEach((btn, index) => {
+        const span = btn.querySelector('span');
+        if (span) {
+            switch (index) {
+                case 0:
+                    span.textContent = currentLanguage === 'de' ? 'Täglich' : 'Daily';
+                    break;
+                case 1:
+                    span.textContent = currentLanguage === 'de' ? 'Wöchentlich' : 'Weekly';
+                    break;
+                case 2:
+                    span.textContent = currentLanguage === 'de' ? 'Monatlich' : 'Monthly';
+                    break;
+                case 3:
+                    span.textContent = currentLanguage === 'de' ? 'Jährlich' : 'Yearly';
+                    break;
+                case 4:
+                    span.textContent = currentLanguage === 'de' ? 'Eigene' : 'Custom';
+                    break;
+            }
+        }
+    });
+    
+    // Update navigation button labels
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        const filter = btn.dataset.filter;
+        switch (filter) {
+            case 'open':
+                btn.textContent = currentLanguage === 'de' ? 'Offen' : 'Open';
+                break;
+            case 'completed':
+                btn.textContent = currentLanguage === 'de' ? 'Abgeschlossen' : 'Completed';
+                break;
+            case 'all':
+                btn.textContent = currentLanguage === 'de' ? 'Alle' : 'All';
+                break;
+        }
+    });
     
     // Update custom repeat options
     const customUnitOptions = document.querySelectorAll('#customUnit option');

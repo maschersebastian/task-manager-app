@@ -565,23 +565,15 @@ input:checked + .slider:before {
     width: 90%;
     max-width: 480px;
     height: auto;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-height: 85vh;
     animation: slideIn 0.3s;
     box-shadow: 0 10px 30px var(--shadow-color);
     display: flex;
     flex-direction: column;
-}
-
-.modal-content form {
-    height: auto;
-    max-height: calc(90vh - 140px); /* Account for header and actions */
-    overflow-y: auto;
+    position: relative;
 }
 
 .modal-header {
-    position: sticky;
-    top: 0;
     background: var(--surface-color);
     z-index: 1;
     border-bottom: 1px solid var(--border-color);
@@ -589,6 +581,8 @@ input:checked + .slider:before {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+    border-radius: 20px 20px 0 0;
 }
 
 .modal form {
@@ -598,18 +592,18 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    max-height: calc(90vh - 60px);
 }
 
 .modal-actions {
     background: var(--surface-color);
-    padding: 20px 0 0 0;
+    padding: 20px;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
     width: 100%;
-    position: sticky;
-    bottom: 0;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 20px 20px;
+    flex-shrink: 0;
 }
 
 
