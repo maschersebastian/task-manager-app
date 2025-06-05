@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:task-manager-app}/TaskManagerSwiftUI",
+            "name": "Debug TaskManagerSwiftUI (TaskManagerSwiftUI)",
+            "program": "${workspaceFolder:task-manager-app}/TaskManagerSwiftUI/.build/debug/TaskManagerSwiftUI",
+            "preLaunchTask": "swift: Build Debug TaskManagerSwiftUI (TaskManagerSwiftUI)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:task-manager-app}/TaskManagerSwiftUI",
+            "name": "Release TaskManagerSwiftUI (TaskManagerSwiftUI)",
+            "program": "${workspaceFolder:task-manager-app}/TaskManagerSwiftUI/.build/release/TaskManagerSwiftUI",
+            "preLaunchTask": "swift: Build Release TaskManagerSwiftUI (TaskManagerSwiftUI)"
+        }
+    ]
+}

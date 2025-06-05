@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager App Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 40px;
+            margin: 20px auto;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .nav-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0 20px;
+        }
+        .filter-bar {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .filter-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .filter-option.selected {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #007AFF;
+            border-radius: 50%;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .task-checkbox.completed {
+            background: #007AFF;
+            position: relative;
+        }
+        .task-checkbox.completed::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .task-content {
+            flex: 1;
+        }
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .task-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .task-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .priority-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        .priority-high {
+            background: rgba(255,59,48,0.1);
+            color: #FF3B30;
+        }
+        .priority-medium {
+            background: rgba(255,149,0,0.1);
+            color: #FF9500;
+        }
+        .priority-low {
+            background: rgba(0,122,255,0.1);
+            color: #007AFF;
+        }
+        .add-button {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 56px;
+            height: 56px;
+            background: #007AFF;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="nav-title">Task Manager</div>
+        
+        <div class="filter-bar">
+            <div class="filter-option selected">All</div>
+            <div class="filter-option">Active</div>
+            <div class="filter-option">Completed</div>
+            <div class="filter-option">Overdue</div>
+        </div>
+        
+        <ul class="task-list">
+            <li class="task-item">
+                <div class="task-checkbox completed"></div>
+                <div class="task-content">
+                    <div class="task-title">Complete SwiftUI Project</div>
+                    <div class="task-description">Finish the task manager app</div>
+                    <div class="task-meta">
+                        Tomorrow
+                        <span class="priority-badge priority-high">High</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-content">
+                    <div class="task-title">Buy Groceries</div>
+                    <div class="task-description">Milk, Bread, Eggs</div>
+                    <div class="task-meta">
+                        Today
+                        <span class="priority-badge priority-medium">Medium</span>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="task-item">
+                <div class="task-checkbox"></div>
+                <div class="task-content">
+                    <div class="task-title">Call Mom</div>
+                    <div class="task-meta">
+                        In 3 hours
+                        <span class="priority-badge priority-low">Low</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        
+        <div class="add-button">+</div>
+    </div>
+</body>
+</html>
