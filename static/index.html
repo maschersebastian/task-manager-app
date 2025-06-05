@@ -7,23 +7,40 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
-        <h1>Erinnerungen</h1>
+        <header>
+            <h1 class="lang-de">Erinnerungen</h1>
+            <h1 class="lang-en">Reminders</h1>
+            
+            <div class="header-controls">
+                <!-- Language Toggle -->
+                <button class="icon-btn" id="languageToggle" title="Sprache ändern / Change Language">
+                    <i class="fas fa-language"></i>
+                    <span class="lang-indicator">DE</span>
+                </button>
+                
+                <!-- Theme Toggle -->
+                <button class="icon-btn" id="themeToggle" title="Theme ändern / Change Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
         
         <!-- Navigation Menu -->
         <nav class="nav-menu">
-            <button class="nav-btn active" data-filter="all">Alle</button>
-            <button class="nav-btn" data-filter="open">Offen</button>
-            <button class="nav-btn" data-filter="completed">Abgeschlossen</button>
+            <button class="nav-btn" data-filter="open" data-text-de="Offen" data-text-en="Open">Offen</button>
+            <button class="nav-btn" data-filter="completed" data-text-de="Abgeschlossen" data-text-en="Completed">Abgeschlossen</button>
+            <button class="nav-btn active" data-filter="all" data-text-de="Alle" data-text-en="All">Alle</button>
         </nav>
 
         <!-- Sort Controls -->
         <div class="sort-controls">
-            <label for="sortBy">Sortieren nach:</label>
+            <label for="sortBy" class="lang-de">Sortieren nach:</label>
+            <label for="sortBy" class="lang-en">Sort by:</label>
             <select id="sortBy">
-                <option value="date">Datum (nächste zuerst)</option>
-                <option value="priority">Wichtigkeit (wichtigste zuerst)</option>
+                <option value="date" data-text-de="Datum (nächste zuerst)" data-text-en="Date (nearest first)">Datum (nächste zuerst)</option>
+                <option value="priority" data-text-de="Wichtigkeit (wichtigste zuerst)" data-text-en="Priority (highest first)">Wichtigkeit (wichtigste zuerst)</option>
             </select>
         </div>
 
@@ -34,7 +51,7 @@
     </div>
 
     <!-- Floating Action Button -->
-    <button class="fab" id="addTaskFab">
+    <button class="fab" id="addTaskFab" title="Neue Erinnerung / New Reminder">
         <i class="fas fa-plus"></i>
     </button>
 
@@ -42,35 +59,60 @@
     <div class="modal" id="taskModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Neue Erinnerung</h2>
+                <h2 id="modalTitle" class="lang-de">Neue Erinnerung</h2>
+                <h2 id="modalTitle-en" class="lang-en">New Reminder</h2>
                 <button class="close-btn" id="closeModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="taskForm">
                 <div class="form-group">
-                    <label for="title">Titel:</label>
+                    <label for="title" class="lang-de">Titel:</label>
+                    <label for="title" class="lang-en">Title:</label>
                     <input type="text" id="title" required>
                 </div>
                 <div class="form-group">
-                    <label for="description">Beschreibung:</label>
+                    <label for="description" class="lang-de">Beschreibung:</label>
+                    <label for="description" class="lang-en">Description:</label>
                     <textarea id="description"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="dueDate">Fälligkeitsdatum:</label>
+                    <label for="dueDate" class="lang-de">Fälligkeitsdatum:</label>
+                    <label for="dueDate" class="lang-en">Due Date:</label>
                     <input type="datetime-local" id="dueDate" required>
                 </div>
                 <div class="form-group">
-                    <label for="priority">Wichtigkeit:</label>
-                    <select id="priority">
-                        <option value="low">Niedrig</option>
-                        <option value="medium" selected>Mittel</option>
-                        <option value="high">Hoch</option>
-                    </select>
+                    <label class="lang-de">Wichtigkeit:</label>
+                    <label class="lang-en">Priority:</label>
+                    <div class="priority-selector">
+                        <input type="radio" id="priority-low" name="priority" value="low">
+                        <label for="priority-low" class="priority-label low">
+                            <span class="lang-de">Niedrig</span>
+                            <span class="lang-en">Low</span>
+                        </label>
+                        
+                        <input type="radio" id="priority-medium" name="priority" value="medium" checked>
+                        <label for="priority-medium" class="priority-label medium">
+                            <span class="lang-de">Mittel</span>
+                            <span class="lang-en">Medium</span>
+                        </label>
+                        
+                        <input type="radio" id="priority-high" name="priority" value="high">
+                        <label for="priority-high" class="priority-label high">
+                            <span class="lang-de">Hoch</span>
+                            <span class="lang-en">High</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="cancelBtn">Abbrechen</button>
-                    <button type="submit" class="btn-primary" id="submitBtn">Speichern</button>
+                    <button type="button" class="btn-secondary" id="cancelBtn">
+                        <span class="lang-de">Abbrechen</span>
+                        <span class="lang-en">Cancel</span>
+                    </button>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span class="lang-de">Speichern</span>
+                        <span class="lang-en">Save</span>
+                    </button>
                 </div>
             </form>
         </div>
