@@ -1,5 +1,4 @@
 const API_BASE_URL = 'http://localhost:8000/api';
-const GOOGLE_TRANSLATE_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with actual API key
 
 // Global variables
 let allTasks = [];
@@ -311,24 +310,20 @@ async function translateTasks() {
     }
 }
 
-// Translate text using Google Translate API or fallback
+// Translate text using LibreTranslate API
 async function translateText(text, targetLang) {
-    // If Google Translate API key is not set, use simple fallback
-    if (GOOGLE_TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE') {
-        return await simpleTranslate(text, targetLang);
-    }
-    
     try {
-        const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        const response = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
             body: JSON.stringify({
                 q: text,
+                source: "auto",
                 target: targetLang,
-                format: 'text'
-            })
+                format: "text",
+                alternatives: 3,
+                api_key: ""
+            }),
+            headers: { "Content-Type": "application/json" }
         });
         
         if (!response.ok) {
@@ -336,9 +331,9 @@ async function translateText(text, targetLang) {
         }
         
         const data = await response.json();
-        return data.data.translations[0].translatedText;
+        return data.translatedText;
     } catch (error) {
-        console.error('Google Translate API error:', error);
+        console.error('LibreTranslate API error:', error);
         return await simpleTranslate(text, targetLang);
     }
 }
@@ -507,12 +502,14 @@ function createTaskHTML(task) {
             
             <div class="task-actions">
                 <span class="task-priority priority-${task.priority}">${priorityLabels[task.priority]}</span>
-                <button class="action-btn edit-btn" onclick="editTask(${task.id})" title="${t.editReminder}">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteTask(${task.id})" title="${t.deleteConfirm}">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="action-buttons">
+                    <button class="action-btn edit-btn" onclick="editTask(${task.id})" title="${t.editReminder}">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button class="action-btn delete-btn" onclick="deleteTask(${task.id})" title="${t.deleteConfirm}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         </div>
     `;
