@@ -2,6 +2,26 @@
 
 A simple task management application built with SwiftUI that helps you organize and track your tasks.
 
+## App Design Preview
+```
+┌─────────────────────────────────────┐
+│           Task Manager              │
+├─────────────────────────────────────┤
+│ [All│Active│Completed│Overdue]      │
+├─────────────────────────────────────┤
+│ ⭕️ Complete SwiftUI Project       │
+│   Due: Tomorrow                     │
+│   Priority: High                    │
+└─────────────────────────────────────┘
+```
+
+[View detailed design documentation](app_screenshots/README.md)
+
+To see an interactive preview of the app design:
+1. Open `app_design_preview.html` in your web browser
+2. Try clicking the filter buttons, task checkboxes, and add task button
+3. This preview demonstrates the look and feel of the actual SwiftUI app
+
 ## Features
 
 - Create, read, update, and delete tasks
