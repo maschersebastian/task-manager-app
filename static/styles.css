@@ -598,23 +598,18 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-height: calc(90vh - 60px);
 }
 
 .modal-actions {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
     background: var(--surface-color);
-    z-index: 1;
-    border-top: 1px solid var(--border-color);
-    padding: 20px 30px;
+    padding: 20px 0 0 0;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    width: 90%;
-    max-width: 480px;
-    border-radius: 0 0 20px 20px;
+    width: 100%;
+    position: sticky;
+    bottom: 0;
 }
 
 

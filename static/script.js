@@ -268,6 +268,41 @@ function updateLanguage() {
     document.getElementById('title').placeholder = currentLanguage === 'de' ? 'Erinnerung eingeben...' : 'Enter reminder...';
     document.getElementById('description').placeholder = currentLanguage === 'de' ? 'Optionale Beschreibung...' : 'Optional description...';
     
+    // Update form labels dynamically
+    const titleLabel = document.querySelector('label[for="title"]');
+    if (titleLabel) titleLabel.textContent = currentLanguage === 'de' ? 'Titel' : 'Title';
+    
+    const descLabel = document.querySelector('label[for="description"]');
+    if (descLabel) descLabel.textContent = currentLanguage === 'de' ? 'Beschreibung' : 'Description';
+    
+    const dueDateLabel = document.querySelector('.form-group label:not([for])');
+    if (dueDateLabel) dueDateLabel.textContent = currentLanguage === 'de' ? 'Fälligkeitsdatum' : 'Due Date';
+    
+    const priorityLabel = document.querySelector('.form-group:nth-last-of-type(2) label');
+    if (priorityLabel) priorityLabel.textContent = currentLanguage === 'de' ? 'Wichtigkeit:' : 'Priority:';
+    
+    // Update priority option labels
+    const priorityLabels = document.querySelectorAll('.priority-label span:not(.priority-icon)');
+    if (priorityLabels.length >= 3) {
+        priorityLabels[0].textContent = currentLanguage === 'de' ? 'Niedrig' : 'Low';
+        priorityLabels[1].textContent = currentLanguage === 'de' ? 'Mittel' : 'Medium';
+        priorityLabels[2].textContent = currentLanguage === 'de' ? 'Hoch' : 'High';
+    }
+    
+    // Update repeat toggle label
+    const repeatLabel = document.querySelector('.repeat-toggle span:not(.slider)');
+    if (repeatLabel) repeatLabel.textContent = currentLanguage === 'de' ? 'Wiederholen' : 'Repeat';
+    
+    // Update repeat button labels
+    const repeatButtons = document.querySelectorAll('.repeat-btn span');
+    if (repeatButtons.length >= 5) {
+        repeatButtons[0].textContent = currentLanguage === 'de' ? 'Täglich' : 'Daily';
+        repeatButtons[1].textContent = currentLanguage === 'de' ? 'Wöchentlich' : 'Weekly';
+        repeatButtons[2].textContent = currentLanguage === 'de' ? 'Monatlich' : 'Monthly';
+        repeatButtons[3].textContent = currentLanguage === 'de' ? 'Jährlich' : 'Yearly';
+        repeatButtons[4].textContent = currentLanguage === 'de' ? 'Eigene' : 'Custom';
+    }
+    
     // Update custom repeat options
     const customUnitOptions = document.querySelectorAll('#customUnit option');
     customUnitOptions.forEach(option => {
@@ -276,6 +311,10 @@ function updateLanguage() {
             option.textContent = option.dataset[`text${textKey.charAt(0).toUpperCase() + textKey.slice(1)}`];
         }
     });
+    
+    // Update cancel button
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) cancelBtn.textContent = currentLanguage === 'de' ? 'Abbrechen' : 'Cancel';
     
     // Redisplay tasks to update language
     displayTasks();

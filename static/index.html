@@ -74,19 +74,16 @@
             <form id="taskForm">
                 <div class="form-group">
                     <label for="title" class="lang-de">Titel</label>
-                    <label for="title" class="lang-en">Title</label>
                     <input type="text" id="title" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="description" class="lang-de">Beschreibung</label>
-                    <label for="description" class="lang-en">Description</label>
                     <textarea id="description"></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label class="lang-de">Fälligkeitsdatum</label>
-                    <label class="lang-en">Due Date</label>
                     <div class="date-time-picker">
                         <div class="date-input-group">
                             <input type="date" id="dueDate" required>
@@ -100,7 +97,6 @@
                                 <span class="slider"></span>
                             </label>
                             <span class="lang-de">Wiederholen</span>
-                            <span class="lang-en">Repeat</span>
                         </div>
                         
                         <!-- Repeat Options -->
@@ -108,23 +104,18 @@
                             <div class="repeat-buttons">
                                 <button type="button" class="repeat-btn active" data-repeat="daily">
                                     <span class="lang-de">Täglich</span>
-                                    <span class="lang-en">Daily</span>
                                 </button>
                                 <button type="button" class="repeat-btn" data-repeat="weekly">
                                     <span class="lang-de">Wöchentlich</span>
-                                    <span class="lang-en">Weekly</span>
                                 </button>
                                 <button type="button" class="repeat-btn" data-repeat="monthly">
                                     <span class="lang-de">Monatlich</span>
-                                    <span class="lang-en">Monthly</span>
                                 </button>
                                 <button type="button" class="repeat-btn" data-repeat="yearly">
                                     <span class="lang-de">Jährlich</span>
-                                    <span class="lang-en">Yearly</span>
                                 </button>
                                 <button type="button" class="repeat-btn" data-repeat="custom">
                                     <span class="lang-de">Eigene</span>
-                                    <span class="lang-en">Custom</span>
                                 </button>
                             </div>
                             
@@ -148,27 +139,23 @@
                 
                 <div class="form-group">
                     <label class="lang-de">Wichtigkeit:</label>
-                    <label class="lang-en">Priority:</label>
                     <div class="priority-selector">
                         <input type="radio" id="priority-low" name="priority" value="low">
                         <label for="priority-low" class="priority-label low">
                             <span class="priority-icon">●</span>
                             <span class="lang-de">Niedrig</span>
-                            <span class="lang-en">Low</span>
                         </label>
                         
                         <input type="radio" id="priority-medium" name="priority" value="medium" checked>
                         <label for="priority-medium" class="priority-label medium">
                             <span class="priority-icon">●</span>
                             <span class="lang-de">Mittel</span>
-                            <span class="lang-en">Medium</span>
                         </label>
                         
                         <input type="radio" id="priority-high" name="priority" value="high">
                         <label for="priority-high" class="priority-label high">
                             <span class="priority-icon">●</span>
                             <span class="lang-de">Hoch</span>
-                            <span class="lang-en">High</span>
                         </label>
                     </div>
                 </div>
