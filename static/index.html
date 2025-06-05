@@ -47,6 +47,20 @@
                     <span class="lang-de">Wichtigkeit</span>
                     <span class="lang-en">Priority</span>
                 </button>
+                <button class="sort-btn" data-sort="category">
+                    <i class="fas fa-tags"></i>
+                    <span class="lang-de">Kategorie</span>
+                    <span class="lang-en">Category</span>
+                </button>
+            </div>
+            
+            <!-- Category Filter (hidden by default) -->
+            <div class="category-filter" id="categoryFilter" style="display: none;">
+                <select id="categoryFilterSelect">
+                    <option value="">Alle Kategorien</option>
+                    <option value="work">Arbeit</option>
+                    <option value="personal">Persönlich</option>
+                </select>
             </div>
         </div>
 
@@ -138,6 +152,18 @@
                 </div>
                 
                 <div class="form-group">
+                    <label>Kategorie:</label>
+                    <div class="category-selector">
+                        <select id="categorySelect">
+                            <option value="">Keine Kategorie</option>
+                            <option value="work">Arbeit</option>
+                            <option value="personal">Persönlich</option>
+                            <option value="new">+ Neue Kategorie erstellen</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
                     <label>Wichtigkeit:</label>
                     <div class="priority-selector">
                         <input type="radio" id="priority-low" name="priority" value="low">
@@ -163,6 +189,88 @@
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">Abbrechen</button>
                     <button type="submit" class="btn-primary" id="submitBtn">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Creating Categories -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">Neue Kategorie erstellen</h2>
+                <button class="close-btn" id="closeCategoryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Name:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryColor">Farbe:</label>
+                    <div class="color-picker">
+                        <input type="color" id="categoryColor" value="#007aff">
+                        <div class="color-presets">
+                            <button type="button" class="color-preset" data-color="#007aff" style="background-color: #007aff;"></button>
+                            <button type="button" class="color-preset" data-color="#ff3b30" style="background-color: #ff3b30;"></button>
+                            <button type="button" class="color-preset" data-color="#34c759" style="background-color: #34c759;"></button>
+                            <button type="button" class="color-preset" data-color="#ff9500" style="background-color: #ff9500;"></button>
+                            <button type="button" class="color-preset" data-color="#af52de" style="background-color: #af52de;"></button>
+                            <button type="button" class="color-preset" data-color="#ff2d92" style="background-color: #ff2d92;"></button>
+                            <button type="button" class="color-preset" data-color="#5ac8fa" style="background-color: #5ac8fa;"></button>
+                            <button type="button" class="color-preset" data-color="#ffcc00" style="background-color: #ffcc00;"></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Symbol:</label>
+                    <div class="icon-selector">
+                        <button type="button" class="icon-option active" data-icon="fas fa-briefcase">
+                            <i class="fas fa-briefcase"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-home">
+                            <i class="fas fa-home"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-heart">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-shopping-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-car">
+                            <i class="fas fa-car"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-graduation-cap">
+                            <i class="fas fa-graduation-cap"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-dumbbell">
+                            <i class="fas fa-dumbbell"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-plane">
+                            <i class="fas fa-plane"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-book">
+                            <i class="fas fa-book"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-music">
+                            <i class="fas fa-music"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-camera">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-gamepad">
+                            <i class="fas fa-gamepad"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelCategoryBtn">Abbrechen</button>
+                    <button type="submit" class="btn-primary" id="createCategoryBtn">Erstellen</button>
                 </div>
             </form>
         </div>

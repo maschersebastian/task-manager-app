@@ -1,7 +1,11 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+Forconst API_BASE_URL = 'http://localhost:8000/api';
 
 // Global variables
 let allTasks = [];
+let allCategories = [
+    { id: 'work', name: 'Arbeit', color: '#007aff', icon: 'fas fa-briefcase' },
+    { id: 'personal', name: 'Persönlich', color: '#34c759', icon: 'fas fa-home' }
+];
 let currentFilter = 'all';
 let currentSort = 'date';
 let editingTaskId = null;
@@ -55,7 +59,17 @@ const translations = {
         days: 'Tag(e)',
         weeks: 'Woche(n)',
         months: 'Monat(e)',
-        years: 'Jahr(e)'
+        years: 'Jahr(e)',
+        category: 'Kategorie',
+        categoryLabel: 'Kategorie:',
+        noCategory: 'Keine Kategorie',
+        newCategory: '+ Neue Kategorie erstellen',
+        allCategories: 'Alle Kategorien',
+        createCategory: 'Neue Kategorie erstellen',
+        categoryName: 'Name:',
+        categoryColor: 'Farbe:',
+        categoryIcon: 'Symbol:',
+        categoryNameRequired: 'Kategorie-Name ist erforderlich.'
     },
     en: {
         title: 'Reminders',
@@ -110,16 +124,23 @@ const translations = {
 const taskList = document.getElementById('taskList');
 const taskForm = document.getElementById('taskForm');
 const taskModal = document.getElementById('taskModal');
+const categoryModal = document.getElementById('categoryModal');
 const addTaskFab = document.getElementById('addTaskFab');
 const closeModal = document.getElementById('closeModal');
+const closeCategoryModal = document.getElementById('closeCategoryModal');
 const cancelBtn = document.getElementById('cancelBtn');
+const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
 const modalTitle = document.getElementById('modalTitle');
 const submitBtn = document.getElementById('submitBtn');
+const createCategoryBtn = document.getElementById('createCategoryBtn');
 const themeToggle = document.getElementById('themeToggle');
 const languageToggle = document.getElementById('languageToggle');
 const repeatToggle = document.getElementById('repeatToggle');
 const repeatOptions = document.getElementById('repeatOptions');
 const customRepeat = document.getElementById('customRepeat');
+const categorySelect = document.getElementById('categorySelect');
+const categoryFilter = document.getElementById('categoryFilter');
+const categoryFilterSelect = document.getElementById('categoryFilterSelect');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -134,11 +155,23 @@ function initializeSettings() {
     currentLanguage = localStorage.getItem('language') || 'de';
     currentTheme = localStorage.getItem('theme') || 'light';
     
+    // Load saved categories
+    const savedCategories = localStorage.getItem('categories');
+    if (savedCategories) {
+        allCategories = JSON.parse(savedCategories);
+    }
+    
     document.documentElement.setAttribute('data-lang', currentLanguage);
     document.documentElement.setAttribute('data-theme', currentTheme);
     
     updateThemeIcon();
     updateLanguageIndicator();
+    updateCategorySelects();
+}
+
+// Save categories to localStorage
+function saveCategories() {
+    localStorage.setItem('categories', JSON.stringify(allCategories));
 }
 
 // Setup event listeners
@@ -155,6 +188,14 @@ function setupEventListeners() {
         btn.addEventListener('click', (e) => {
             currentSort = e.target.dataset.sort;
             updateSortButtons();
+            
+            // Show/hide category filter
+            if (currentSort === 'category') {
+                categoryFilter.style.display = 'block';
+            } else {
+                categoryFilter.style.display = 'none';
+            }
+            
             displayTasks();
         });
     });
@@ -173,8 +214,18 @@ function setupEventListeners() {
         }
     });
 
+    // Category modal controls
+    closeCategoryModal.addEventListener('click', closeCategoryModalHandler);
+    cancelCategoryBtn.addEventListener('click', closeCategoryModalHandler);
+    categoryModal.addEventListener('click', (e) => {
+        if (e.target === categoryModal) {
+            closeCategoryModalHandler();
+        }
+    });
+
     // Form submission
     taskForm.addEventListener('submit', handleFormSubmit);
+    document.getElementById('categoryForm').addEventListener('submit', handleCategoryFormSubmit);
 
     // Theme toggle
     themeToggle.addEventListener('click', toggleTheme);
@@ -229,7 +280,7 @@ function toggleTheme() {
 // Update theme icon
 function updateThemeIcon() {
     const icon = themeToggle.querySelector('i');
-    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-lightbulb';
+    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
 }
 
 // Toggle language
@@ -498,15 +549,31 @@ function displayTasks() {
 
 // Filter tasks based on current filter
 function filterTasks(tasks) {
+    let filteredTasks = tasks;
+    
+    // Status filter
     switch (currentFilter) {
         case 'open':
-            return tasks.filter(task => !task.is_completed);
+            filteredTasks = filteredTasks.filter(task => !task.is_completed);
+            break;
         case 'completed':
-            return tasks.filter(task => task.is_completed);
-        default:
-            return tasks;
+            filteredTasks = filteredTasks.filter(task => task.is_completed);
+            break;
     }
+    
+    // Category filter
+    const selectedCategory = categoryFilterSelect.value;
+    if (selectedCategory) {
+        filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
+    }
+    
+    return filteredTasks;
 }
+
+// Add category filter change handler
+categoryFilterSelect.addEventListener('change', () => {
+    displayTasks();
+});
 
 // Sort tasks based on current sort option
 function sortTasks(tasks) {
@@ -516,6 +583,10 @@ function sortTasks(tasks) {
         } else if (currentSort === 'priority') {
             const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
             return priorityOrder[b.priority] - priorityOrder[a.priority];
+        } else if (currentSort === 'category') {
+            const aCat = a.category ? allCategories.find(cat => cat.id === a.category)?.name || '' : '';
+            const bCat = b.category ? allCategories.find(cat => cat.id === b.category)?.name || '' : '';
+            return aCat.localeCompare(bCat);
         }
         return 0;
     });
@@ -553,6 +624,9 @@ function createTaskHTML(task) {
         'high': t.priorityHigh
     };
     
+    // Get category info
+    const category = task.category ? allCategories.find(cat => cat.id === task.category) : null;
+    
     return `
         <div class="task-item ${task.is_completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-task-id="${task.id}">
             <div class="task-completion ${task.is_completed ? 'completed' : ''}" 
@@ -564,6 +638,13 @@ function createTaskHTML(task) {
                 <div class="task-header">
                     <h3 class="task-title ${task.is_completed ? 'completed' : ''}">${escapeHtml(task.title)}</h3>
                 </div>
+                
+                ${category ? `
+                    <div class="category-badge" style="background-color: ${category.color};">
+                        <i class="${category.icon}"></i>
+                        <span>${category.name}</span>
+                    </div>
+                ` : ''}
                 
                 ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ''}
                 
@@ -600,6 +681,7 @@ function openModal(task = null) {
         document.getElementById('title').value = task.title;
         document.getElementById('description').value = task.description || '';
         document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
+        categorySelect.value = task.category || '';
         
         // Format date and time for inputs
         const dueDate = new Date(task.due_date);
@@ -647,6 +729,95 @@ function closeModalHandler() {
     customRepeat.style.display = 'none';
 }
 
+// Close category modal
+function closeCategoryModalHandler() {
+    categoryModal.classList.remove('show');
+    document.getElementById('categoryForm').reset();
+    document.querySelectorAll('.icon-option').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.icon-option').classList.add('active');
+}
+
+// Handle category form submission
+async function handleCategoryFormSubmit(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('categoryName').value.trim();
+    const color = document.getElementById('categoryColor').value;
+    const icon = document.querySelector('.icon-option.active').dataset.icon;
+    
+    if (!name) {
+        showError('Kategorie-Name ist erforderlich.');
+        return;
+    }
+    
+    const newCategory = {
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name: name,
+        color: color,
+        icon: icon
+    };
+    
+    // Add new category to the list
+    allCategories.push(newCategory);
+    
+    // Save categories to localStorage
+    saveCategories();
+    
+    // Update category selects
+    updateCategorySelects();
+    
+    // Close the modal
+    closeCategoryModalHandler();
+    
+    // Select the new category in the task form
+    categorySelect.value = newCategory.id;
+}
+
+// Update category selects
+function updateCategorySelects() {
+    // Update task form select
+    categorySelect.innerHTML = `
+        <option value="">Keine Kategorie</option>
+        ${allCategories.map(cat => `
+            <option value="${cat.id}">${cat.name}</option>
+        `).join('')}
+        <option value="new">+ Neue Kategorie erstellen</option>
+    `;
+    
+    // Update filter select
+    categoryFilterSelect.innerHTML = `
+        <option value="">Alle Kategorien</option>
+        ${allCategories.map(cat => `
+            <option value="${cat.id}">${cat.name}</option>
+        `).join('')}
+    `;
+}
+
+// Handle category selection
+categorySelect.addEventListener('change', function(e) {
+    if (e.target.value === 'new') {
+        e.target.value = ''; // Reset selection
+        categoryModal.classList.add('show');
+    }
+});
+
+// Handle color preset selection
+document.querySelectorAll('.color-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('categoryColor').value = btn.dataset.color;
+        document.querySelectorAll('.color-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
+// Handle icon selection
+document.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
 // Handle form submission
 async function handleFormSubmit(event) {
     event.preventDefault();
@@ -676,6 +847,7 @@ async function handleFormSubmit(event) {
         description: document.getElementById('description').value.trim() || null,
         due_date: parsedDate ? parsedDate.toISOString() : null,
         priority: selectedPriority ? selectedPriority.value : 'medium',
+        category: categorySelect.value || null,
         is_completed: false
     };
 
