@@ -247,7 +247,8 @@ async function toggleLanguage() {
 // Update language indicator
 function updateLanguageIndicator() {
     const indicator = languageToggle.querySelector('.lang-indicator');
-    indicator.textContent = currentLanguage.toUpperCase();
+    // Show the opposite language that user can switch to
+    indicator.textContent = currentLanguage === 'de' ? 'EN' : 'DE';
 }
 
 // Update language in UI
