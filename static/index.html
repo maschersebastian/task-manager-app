@@ -36,12 +36,18 @@
 
         <!-- Sort Controls -->
         <div class="sort-controls">
-            <label for="sortBy" class="lang-de">Sortieren nach:</label>
-            <label for="sortBy" class="lang-en">Sort by:</label>
-            <select id="sortBy">
-                <option value="date" data-text-de="Datum (nächste zuerst)" data-text-en="Date (nearest first)">Datum (nächste zuerst)</option>
-                <option value="priority" data-text-de="Wichtigkeit (wichtigste zuerst)" data-text-en="Priority (highest first)">Wichtigkeit (wichtigste zuerst)</option>
-            </select>
+            <div class="sort-buttons">
+                <button class="sort-btn active" data-sort="date">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="lang-de">Datum</span>
+                    <span class="lang-en">Date</span>
+                </button>
+                <button class="sort-btn" data-sort="priority">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="lang-de">Wichtigkeit</span>
+                    <span class="lang-en">Priority</span>
+                </button>
+            </div>
         </div>
 
         <!-- Task List -->
@@ -67,43 +73,106 @@
             </div>
             <form id="taskForm">
                 <div class="form-group">
-                    <label for="title" class="lang-de">Titel:</label>
-                    <label for="title" class="lang-en">Title:</label>
-                    <input type="text" id="title" required>
+                    <label for="title" class="lang-de">Titel</label>
+                    <label for="title" class="lang-en">Title</label>
+                    <input type="text" id="title" required placeholder="Erinnerung eingeben...">
                 </div>
+                
                 <div class="form-group">
-                    <label for="description" class="lang-de">Beschreibung:</label>
-                    <label for="description" class="lang-en">Description:</label>
-                    <textarea id="description"></textarea>
+                    <label for="description" class="lang-de">Beschreibung</label>
+                    <label for="description" class="lang-en">Description</label>
+                    <textarea id="description" placeholder="Optionale Beschreibung..."></textarea>
                 </div>
+                
                 <div class="form-group">
-                    <label for="dueDate" class="lang-de">Fälligkeitsdatum:</label>
-                    <label for="dueDate" class="lang-en">Due Date:</label>
-                    <input type="datetime-local" id="dueDate" required>
+                    <label class="lang-de">Fälligkeitsdatum</label>
+                    <label class="lang-en">Due Date</label>
+                    <div class="date-time-picker">
+                        <div class="date-input-group">
+                            <input type="date" id="dueDate" required>
+                            <input type="time" id="dueTime" required>
+                        </div>
+                        
+                        <!-- Repeat Toggle -->
+                        <div class="repeat-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="repeatToggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="lang-de">Wiederholen</span>
+                            <span class="lang-en">Repeat</span>
+                        </div>
+                        
+                        <!-- Repeat Options -->
+                        <div class="repeat-options" id="repeatOptions" style="display: none;">
+                            <div class="repeat-buttons">
+                                <button type="button" class="repeat-btn active" data-repeat="daily">
+                                    <span class="lang-de">Täglich</span>
+                                    <span class="lang-en">Daily</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="weekly">
+                                    <span class="lang-de">Wöchentlich</span>
+                                    <span class="lang-en">Weekly</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="monthly">
+                                    <span class="lang-de">Monatlich</span>
+                                    <span class="lang-en">Monthly</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="yearly">
+                                    <span class="lang-de">Jährlich</span>
+                                    <span class="lang-en">Yearly</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="custom">
+                                    <span class="lang-de">Eigene</span>
+                                    <span class="lang-en">Custom</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Custom Repeat -->
+                            <div class="custom-repeat" id="customRepeat" style="display: none;">
+                                <div class="custom-repeat-input">
+                                    <span class="lang-de">Alle</span>
+                                    <span class="lang-en">Every</span>
+                                    <input type="number" id="customInterval" min="1" value="1">
+                                    <select id="customUnit">
+                                        <option value="days" data-text-de="Tag(e)" data-text-en="Day(s)">Tag(e)</option>
+                                        <option value="weeks" data-text-de="Woche(n)" data-text-en="Week(s)">Woche(n)</option>
+                                        <option value="months" data-text-de="Monat(e)" data-text-en="Month(s)">Monat(e)</option>
+                                        <option value="years" data-text-de="Jahr(e)" data-text-en="Year(s)">Jahr(e)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="form-group">
                     <label class="lang-de">Wichtigkeit:</label>
                     <label class="lang-en">Priority:</label>
                     <div class="priority-selector">
                         <input type="radio" id="priority-low" name="priority" value="low">
                         <label for="priority-low" class="priority-label low">
+                            <span class="priority-icon">●</span>
                             <span class="lang-de">Niedrig</span>
                             <span class="lang-en">Low</span>
                         </label>
                         
                         <input type="radio" id="priority-medium" name="priority" value="medium" checked>
                         <label for="priority-medium" class="priority-label medium">
+                            <span class="priority-icon">●</span>
                             <span class="lang-de">Mittel</span>
                             <span class="lang-en">Medium</span>
                         </label>
                         
                         <input type="radio" id="priority-high" name="priority" value="high">
                         <label for="priority-high" class="priority-label high">
+                            <span class="priority-icon">●</span>
                             <span class="lang-de">Hoch</span>
                             <span class="lang-en">High</span>
                         </label>
                     </div>
                 </div>
+                
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">
                         <span class="lang-de">Abbrechen</span>

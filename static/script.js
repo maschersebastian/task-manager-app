@@ -1,4 +1,5 @@
 const API_BASE_URL = 'http://localhost:8000/api';
+const GOOGLE_TRANSLATE_API_KEY = 'YOUR_API_KEY_HERE'; // Replace with actual API key
 
 // Global variables
 let allTasks = [];
@@ -15,9 +16,8 @@ const translations = {
         open: 'Offen',
         completed: 'Abgeschlossen',
         all: 'Alle',
-        sortBy: 'Sortieren nach:',
-        sortDate: 'Datum (nächste zuerst)',
-        sortPriority: 'Wichtigkeit (wichtigste zuerst)',
+        date: 'Datum',
+        priority: 'Wichtigkeit',
         newReminder: 'Neue Erinnerung',
         editReminder: 'Erinnerung bearbeiten',
         titleLabel: 'Titel:',
@@ -45,16 +45,26 @@ const translations = {
         titleRequired: 'Titel ist erforderlich.',
         dueDateRequired: 'Fälligkeitsdatum ist erforderlich.',
         invalidDate: 'Bitte geben Sie ein gültiges Datum und eine gültige Uhrzeit ein.',
-        deleteConfirm: 'Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?'
+        deleteConfirm: 'Sind Sie sicher, dass Sie diese Erinnerung löschen möchten?',
+        repeat: 'Wiederholen',
+        daily: 'Täglich',
+        weekly: 'Wöchentlich',
+        monthly: 'Monatlich',
+        yearly: 'Jährlich',
+        custom: 'Eigene',
+        every: 'Alle',
+        days: 'Tag(e)',
+        weeks: 'Woche(n)',
+        months: 'Monat(e)',
+        years: 'Jahr(e)'
     },
     en: {
         title: 'Reminders',
         open: 'Open',
         completed: 'Completed',
         all: 'All',
-        sortBy: 'Sort by:',
-        sortDate: 'Date (nearest first)',
-        sortPriority: 'Priority (highest first)',
+        date: 'Date',
+        priority: 'Priority',
         newReminder: 'New Reminder',
         editReminder: 'Edit Reminder',
         titleLabel: 'Title:',
@@ -82,7 +92,18 @@ const translations = {
         titleRequired: 'Title is required.',
         dueDateRequired: 'Due date is required.',
         invalidDate: 'Please enter a valid date and time.',
-        deleteConfirm: 'Are you sure you want to delete this reminder?'
+        deleteConfirm: 'Are you sure you want to delete this reminder?',
+        repeat: 'Repeat',
+        daily: 'Daily',
+        weekly: 'Weekly',
+        monthly: 'Monthly',
+        yearly: 'Yearly',
+        custom: 'Custom',
+        every: 'Every',
+        days: 'Day(s)',
+        weeks: 'Week(s)',
+        months: 'Month(s)',
+        years: 'Year(s)'
     }
 };
 
@@ -95,9 +116,11 @@ const closeModal = document.getElementById('closeModal');
 const cancelBtn = document.getElementById('cancelBtn');
 const modalTitle = document.getElementById('modalTitle');
 const submitBtn = document.getElementById('submitBtn');
-const sortSelect = document.getElementById('sortBy');
 const themeToggle = document.getElementById('themeToggle');
 const languageToggle = document.getElementById('languageToggle');
+const repeatToggle = document.getElementById('repeatToggle');
+const repeatOptions = document.getElementById('repeatOptions');
+const customRepeat = document.getElementById('customRepeat');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -128,10 +151,13 @@ function setupEventListeners() {
         });
     });
 
-    // Sort dropdown
-    sortSelect.addEventListener('change', (e) => {
-        currentSort = e.target.value;
-        displayTasks();
+    // Sort buttons
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentSort = e.target.dataset.sort;
+            updateSortButtons();
+            displayTasks();
+        });
     });
 
     // FAB button
@@ -157,12 +183,40 @@ function setupEventListeners() {
     // Language toggle
     languageToggle.addEventListener('click', toggleLanguage);
 
+    // Repeat toggle
+    repeatToggle.addEventListener('change', (e) => {
+        repeatOptions.style.display = e.target.checked ? 'block' : 'none';
+    });
+
+    // Repeat buttons
+    document.querySelectorAll('.repeat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (btn.dataset.repeat === 'custom') {
+                customRepeat.style.display = 'block';
+            } else {
+                customRepeat.style.display = 'none';
+            }
+        });
+    });
+
     // Escape key to close modal
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && taskModal.classList.contains('show')) {
             closeModalHandler();
         }
     });
+}
+
+// Update sort buttons
+function updateSortButtons() {
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-sort="${currentSort}"]`).classList.add('active');
 }
 
 // Toggle theme
@@ -176,7 +230,7 @@ function toggleTheme() {
 // Update theme icon
 function updateThemeIcon() {
     const icon = themeToggle.querySelector('i');
-    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-lightbulb';
 }
 
 // Toggle language
@@ -201,11 +255,6 @@ function updateLanguageIndicator() {
 function updateLanguage() {
     const t = translations[currentLanguage];
     
-    // Update sort options
-    const sortOptions = sortSelect.querySelectorAll('option');
-    sortOptions[0].textContent = t.sortDate;
-    sortOptions[1].textContent = t.sortPriority;
-    
     // Update modal titles
     if (editingTaskId) {
         modalTitle.textContent = t.editReminder;
@@ -215,31 +264,39 @@ function updateLanguage() {
         submitBtn.textContent = t.create;
     }
     
+    // Update placeholders
+    document.getElementById('title').placeholder = currentLanguage === 'de' ? 'Erinnerung eingeben...' : 'Enter reminder...';
+    document.getElementById('description').placeholder = currentLanguage === 'de' ? 'Optionale Beschreibung...' : 'Optional description...';
+    
+    // Update custom repeat options
+    const customUnitOptions = document.querySelectorAll('#customUnit option');
+    customUnitOptions.forEach(option => {
+        const textKey = `${currentLanguage === 'de' ? 'de' : 'en'}`;
+        if (option.dataset[`text${textKey.charAt(0).toUpperCase() + textKey.slice(1)}`]) {
+            option.textContent = option.dataset[`text${textKey.charAt(0).toUpperCase() + textKey.slice(1)}`];
+        }
+    });
+    
     // Redisplay tasks to update language
     displayTasks();
 }
 
-// Translate tasks using a simple translation service
+// Translate tasks using Google Translate API
 async function translateTasks() {
     if (allTasks.length === 0) return;
     
     try {
-        // For demo purposes, we'll use a simple translation mapping
-        // In a real app, you'd use Google Translate API or similar
         const translatedTasks = await Promise.all(allTasks.map(async (task) => {
             const translatedTask = { ...task };
             
-            // Simple translation examples (in real app, use proper translation service)
-            if (currentLanguage === 'en') {
-                translatedTask.title = await simpleTranslate(task.title, 'de', 'en');
-                if (task.description) {
-                    translatedTask.description = await simpleTranslate(task.description, 'de', 'en');
-                }
-            } else {
-                translatedTask.title = await simpleTranslate(task.title, 'en', 'de');
-                if (task.description) {
-                    translatedTask.description = await simpleTranslate(task.description, 'en', 'de');
-                }
+            // Translate title
+            if (task.title) {
+                translatedTask.title = await translateText(task.title, currentLanguage);
+            }
+            
+            // Translate description
+            if (task.description) {
+                translatedTask.description = await translateText(task.description, currentLanguage);
             }
             
             return translatedTask;
@@ -254,32 +311,68 @@ async function translateTasks() {
     }
 }
 
-// Simple translation function (placeholder - in real app use proper translation service)
-async function simpleTranslate(text, from, to) {
-    // This is a placeholder function. In a real application, you would:
-    // 1. Use Google Translate API
-    // 2. Use Microsoft Translator API
-    // 3. Use another translation service
+// Translate text using Google Translate API or fallback
+async function translateText(text, targetLang) {
+    // If Google Translate API key is not set, use simple fallback
+    if (GOOGLE_TRANSLATE_API_KEY === 'YOUR_API_KEY_HERE') {
+        return await simpleTranslate(text, targetLang);
+    }
     
-    // For demo purposes, return original text
-    // You could implement basic word replacements here
+    try {
+        const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${GOOGLE_TRANSLATE_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                q: text,
+                target: targetLang,
+                format: 'text'
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Translation API error');
+        }
+        
+        const data = await response.json();
+        return data.data.translations[0].translatedText;
+    } catch (error) {
+        console.error('Google Translate API error:', error);
+        return await simpleTranslate(text, targetLang);
+    }
+}
+
+// Simple translation function (fallback)
+async function simpleTranslate(text, targetLang) {
     const basicTranslations = {
-        'de-en': {
-            'Erinnerung': 'Reminder',
-            'Aufgabe': 'Task',
-            'wichtig': 'important',
-            'dringend': 'urgent'
-        },
-        'en-de': {
+        'de': {
             'Reminder': 'Erinnerung',
             'Task': 'Aufgabe',
             'important': 'wichtig',
-            'urgent': 'dringend'
+            'urgent': 'dringend',
+            'meeting': 'Besprechung',
+            'call': 'Anruf',
+            'email': 'E-Mail',
+            'buy': 'kaufen',
+            'work': 'Arbeit',
+            'home': 'Zuhause'
+        },
+        'en': {
+            'Erinnerung': 'Reminder',
+            'Aufgabe': 'Task',
+            'wichtig': 'important',
+            'dringend': 'urgent',
+            'Besprechung': 'meeting',
+            'Anruf': 'call',
+            'E-Mail': 'email',
+            'kaufen': 'buy',
+            'Arbeit': 'work',
+            'Zuhause': 'home'
         }
     };
     
-    const translationKey = `${from}-${to}`;
-    const translations = basicTranslations[translationKey] || {};
+    const translations = basicTranslations[targetLang] || {};
     
     let translatedText = text;
     Object.keys(translations).forEach(key => {
@@ -396,13 +489,13 @@ function createTaskHTML(task) {
     return `
         <div class="task-item ${task.is_completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-task-id="${task.id}">
             <div class="task-completion ${task.is_completed ? 'completed' : ''}" 
-                 onclick="toggleTaskCompletion(${task.id}, ${!task.is_completed})">
+                 onclick="toggleTaskCompletion(${task.id}, ${!task.is_completed})"
+                 style="background-color: ${task.is_completed ? 'var(--primary-color)' : 'var(--border-color)'}">
             </div>
             
             <div class="task-content">
                 <div class="task-header">
                     <h3 class="task-title ${task.is_completed ? 'completed' : ''}">${escapeHtml(task.title)}</h3>
-                    <span class="task-priority priority-${task.priority}">${priorityLabels[task.priority]}</span>
                 </div>
                 
                 ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ''}
@@ -413,6 +506,7 @@ function createTaskHTML(task) {
             </div>
             
             <div class="task-actions">
+                <span class="task-priority priority-${task.priority}">${priorityLabels[task.priority]}</span>
                 <button class="action-btn edit-btn" onclick="editTask(${task.id})" title="${t.editReminder}">
                     <i class="fas fa-pencil-alt"></i>
                 </button>
@@ -438,15 +532,37 @@ function openModal(task = null) {
         document.getElementById('description').value = task.description || '';
         document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
         
-        // Format date for datetime-local input
+        // Format date and time for inputs
         const dueDate = new Date(task.due_date);
-        const formattedDate = dueDate.toISOString().slice(0, 16);
-        document.getElementById('dueDate').value = formattedDate;
+        document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+        document.getElementById('dueTime').value = dueDate.toTimeString().slice(0, 5);
+        
+        // Handle repeat settings if available
+        if (task.repeat_type) {
+            repeatToggle.checked = true;
+            repeatOptions.style.display = 'block';
+            
+            document.querySelectorAll('.repeat-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-repeat="${task.repeat_type}"]`).classList.add('active');
+            
+            if (task.repeat_type === 'custom') {
+                customRepeat.style.display = 'block';
+                document.getElementById('customInterval').value = task.repeat_interval || 1;
+                document.getElementById('customUnit').value = task.repeat_unit || 'days';
+            }
+        }
     } else {
         modalTitle.textContent = t.newReminder;
         submitBtn.textContent = t.create;
         taskForm.reset();
         document.querySelector('input[name="priority"][value="medium"]').checked = true;
+        repeatOptions.style.display = 'none';
+        customRepeat.style.display = 'none';
+        
+        // Set default date to today
+        const today = new Date();
+        document.getElementById('dueDate').value = today.toISOString().split('T')[0];
+        document.getElementById('dueTime').value = '12:00';
     }
     
     taskModal.classList.add('show');
@@ -458,6 +574,8 @@ function closeModalHandler() {
     taskModal.classList.remove('show');
     taskForm.reset();
     editingTaskId = null;
+    repeatOptions.style.display = 'none';
+    customRepeat.style.display = 'none';
 }
 
 // Handle form submission
@@ -466,12 +584,13 @@ async function handleFormSubmit(event) {
     const t = translations[currentLanguage];
     
     const dueDateValue = document.getElementById('dueDate').value;
+    const dueTimeValue = document.getElementById('dueTime').value;
     
     // Validate and parse the date
     let parsedDate = null;
-    if (dueDateValue) {
+    if (dueDateValue && dueTimeValue) {
         try {
-            parsedDate = new Date(dueDateValue);
+            parsedDate = new Date(`${dueDateValue}T${dueTimeValue}`);
             if (isNaN(parsedDate.getTime())) {
                 throw new Error('Invalid date format');
             }
@@ -490,6 +609,19 @@ async function handleFormSubmit(event) {
         priority: selectedPriority ? selectedPriority.value : 'medium',
         is_completed: false
     };
+
+    // Handle repeat settings
+    if (repeatToggle.checked) {
+        const activeRepeatBtn = document.querySelector('.repeat-btn.active');
+        if (activeRepeatBtn) {
+            taskData.repeat_type = activeRepeatBtn.dataset.repeat;
+            
+            if (taskData.repeat_type === 'custom') {
+                taskData.repeat_interval = parseInt(document.getElementById('customInterval').value) || 1;
+                taskData.repeat_unit = document.getElementById('customUnit').value;
+            }
+        }
+    }
 
     if (!taskData.title) {
         showError(t.titleRequired);

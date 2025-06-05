@@ -14,6 +14,9 @@ class TaskBase(BaseModel):
     due_date: datetime
     is_completed: bool = False
     priority: PriorityEnum = PriorityEnum.medium
+    repeat_type: Optional[str] = None
+    repeat_interval: Optional[int] = None
+    repeat_unit: Optional[str] = None
 
 class TaskCreate(TaskBase):
     pass
@@ -24,6 +27,9 @@ class TaskUpdate(BaseModel):
     due_date: Optional[datetime] = None
     is_completed: Optional[bool] = None
     priority: Optional[PriorityEnum] = None
+    repeat_type: Optional[str] = None
+    repeat_interval: Optional[int] = None
+    repeat_unit: Optional[str] = None
 
 class Task(TaskBase):
     id: int
