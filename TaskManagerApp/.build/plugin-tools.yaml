@@ -1,0 +1,81 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "PackageStructure": ["<PackageStructure>"]
+  "TaskManagerApp-arm64-apple-macosx15.0-debug.exe": ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe>"]
+  "TaskManagerApp-arm64-apple-macosx15.0-debug.module": ["<TaskManagerApp-arm64-apple-macosx15.0-debug.module>"]
+  "main": ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe>","<TaskManagerApp-arm64-apple-macosx15.0-debug.module>"]
+  "test": ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe>","<TaskManagerApp-arm64-apple-macosx15.0-debug.module>"]
+default: "main"
+nodes:
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp":
+    is-mutated: true
+commands:
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp-entitlement.plist":
+    tool: write-auxiliary-file
+    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp-entitlement.plist"]
+    description: "Write auxiliary file /Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp-entitlement.plist"
+
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/ContentView.swift","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/TaskManagerApp.swift"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/sources"]
+    description: "Write auxiliary file /Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/sources"
+
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swift.o"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.product/Objects.LinkFileList"
+
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+
+  "<TaskManagerApp-arm64-apple-macosx15.0-debug.exe>":
+    tool: phony
+    inputs: ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    outputs: ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe>"]
+
+  "<TaskManagerApp-arm64-apple-macosx15.0-debug.module>":
+    tool: phony
+    inputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/Modules/TaskManagerApp.swiftmodule"]
+    outputs: ["<TaskManagerApp-arm64-apple-macosx15.0-debug.module>"]
+
+  "C.TaskManagerApp-arm64-apple-macosx15.0-debug.exe":
+    tool: shell
+    inputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.product/Objects.LinkFileList"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/TaskManagerApp"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug","-o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp","-module-name","TaskManagerApp","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_TaskManagerApp_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.product/Objects.LinkFileList","-target","arm64-apple-macosx12.0","-Xlinker","-add_ast_path","-Xlinker","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/Modules/TaskManagerApp.swiftmodule","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
+
+  "C.TaskManagerApp-arm64-apple-macosx15.0-debug.exe-entitlements":
+    tool: shell
+    inputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp-entitlement.plist"]
+    outputs: ["<TaskManagerApp-arm64-apple-macosx15.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/TaskManagerApp"
+    args: ["codesign","--force","--sign","-","--entitlements","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp-entitlement.plist","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp"]
+
+  "C.TaskManagerApp-arm64-apple-macosx15.0-debug.module":
+    tool: shell
+    inputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/ContentView.swift","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/TaskManagerApp.swift","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/sources"]
+    outputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swift.o","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/Modules/TaskManagerApp.swiftmodule"]
+    description: "Compiling Swift Module 'TaskManagerApp' (2 sources)"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","TaskManagerApp","-emit-dependencies","-emit-module","-emit-module-path","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/Modules/TaskManagerApp.swiftmodule","-output-file-map","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/output-file-map.json","-incremental","-c","@/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/sources","-I","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx12.0","-enable-batch-mode","-index-store-path","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-module-cache-path","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","TaskManagerApp_main","-color-diagnostics","-swift-version","5","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Package.swift","/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

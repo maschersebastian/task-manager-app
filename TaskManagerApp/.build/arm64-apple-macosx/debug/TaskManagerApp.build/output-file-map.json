@@ -1,0 +1,17 @@
+{
+  "": {
+    "swift-dependencies": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/master.swiftdeps"
+  },
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/ContentView.swift": {
+    "dependencies": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.d",
+    "object": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swift.o",
+    "swiftmodule": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/ContentView.swiftdeps"
+  },
+  "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/Sources/TaskManagerApp/TaskManagerApp.swift": {
+    "dependencies": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.d",
+    "object": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swift.o",
+    "swiftmodule": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/semascher/Documents/GitHub/task-manager-app/TaskManagerApp/.build/arm64-apple-macosx/debug/TaskManagerApp.build/TaskManagerApp.swiftdeps"
+  }
+}
