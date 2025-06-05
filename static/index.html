@@ -47,26 +47,31 @@
                     <span class="lang-de">Wichtigkeit</span>
                     <span class="lang-en">Priority</span>
                 </button>
-                <button class="sort-btn" data-sort="category">
-                    <i class="fas fa-tags"></i>
-                    <span class="lang-de">Kategorie</span>
-                    <span class="lang-en">Category</span>
-                </button>
-            </div>
-            
-            <!-- Category Filter (hidden by default) -->
-            <div class="category-filter" id="categoryFilter" style="display: none;">
-                <select id="categoryFilterSelect">
-                    <option value="">Alle Kategorien</option>
-                    <option value="work">Arbeit</option>
-                    <option value="personal">Persönlich</option>
-                </select>
             </div>
         </div>
 
-        <!-- Task List -->
-        <div class="task-list">
-            <div id="taskList"></div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Categories Sidebar -->
+            <div class="categories-sidebar">
+                <div class="categories-header">
+                    <h3 class="lang-de">Kategorien</h3>
+                    <h3 class="lang-en">Categories</h3>
+                </div>
+                <div class="categories-list" id="categoriesList">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+                <button class="category-manage-btn" id="manageCategoriesBtn">
+                    <i class="fas fa-cog"></i>
+                    <span class="lang-de">Verwalten</span>
+                    <span class="lang-en">Manage</span>
+                </button>
+            </div>
+
+            <!-- Task List -->
+            <div class="task-list">
+                <div id="taskList"></div>
+            </div>
         </div>
     </div>
 
@@ -153,13 +158,8 @@
                 
                 <div class="form-group">
                     <label>Kategorie:</label>
-                    <div class="category-selector">
-                        <select id="categorySelect">
-                            <option value="">Keine Kategorie</option>
-                            <option value="work">Arbeit</option>
-                            <option value="personal">Persönlich</option>
-                            <option value="new">+ Neue Kategorie erstellen</option>
-                        </select>
+                    <div class="category-selector-visual" id="categorySelector">
+                        <!-- Categories will be populated by JavaScript -->
                     </div>
                 </div>
                 
@@ -272,6 +272,29 @@
                     <button type="submit" class="btn-primary" id="createCategoryBtn">Erstellen</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal for Managing Categories -->
+    <div class="modal" id="categoryManageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="lang-de">Kategorien verwalten</h2>
+                <h2 class="lang-en">Manage Categories</h2>
+                <button class="close-btn" id="closeCategoryManageModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="category-manage-content">
+                <div class="category-manage-list" id="categoryManageList">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+                <button class="btn-primary" id="addNewCategoryBtn">
+                    <i class="fas fa-plus"></i>
+                    <span class="lang-de">Neue Kategorie</span>
+                    <span class="lang-en">New Category</span>
+                </button>
+            </div>
         </div>
     </div>
 

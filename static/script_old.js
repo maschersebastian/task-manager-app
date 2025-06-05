@@ -11,7 +11,6 @@ let currentSort = 'date';
 let editingTaskId = null;
 let currentLanguage = 'de';
 let currentTheme = 'light';
-let selectedCategory = null;
 
 // Translation object
 const translations = {
@@ -122,38 +121,34 @@ const translations = {
 };
 
 // DOM Elements
-let taskList, taskForm, taskModal, categoryModal, addTaskFab, closeModal, closeCategoryModal;
-let cancelCategoryBtn, modalTitle, submitBtn, createCategoryBtn, themeToggle, languageToggle;
-let repeatToggle, repeatOptions, customRepeat, categoriesList, categorySelector;
-let manageCategoriesBtn, categoryManageModal, closeCategoryManageModal, categoryManageList, addNewCategoryBtn;
+const taskList = document.getElementById('taskList');
+const taskForm = document.getElementById('taskForm');
+const taskModal = document.getElementById('taskModal');
+const categoryModal = document.getElementById('categoryModal');
+const addTaskFab = document.getElementById('addTaskFab');
+const closeModal = document.getElementById('closeModal');
+const closeCategoryModal = document.getElementById('closeCategoryModal');
+const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+const modalTitle = document.getElementById('modalTitle');
+const submitBtn = document.getElementById('submitBtn');
+const createCategoryBtn = document.getElementById('createCategoryBtn');
+const themeToggle = document.getElementById('themeToggle');
+const languageToggle = document.getElementById('languageToggle');
+const repeatToggle = document.getElementById('repeatToggle');
+const repeatOptions = document.getElementById('repeatOptions');
+const customRepeat = document.getElementById('customRepeat');
+const categoriesList = document.getElementById('categoriesList');
+const categorySelector = document.getElementById('categorySelector');
+const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+const categoryManageModal = document.getElementById('categoryManageModal');
+const closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
+const categoryManageList = document.getElementById('categoryManageList');
+const addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
+
+let selectedCategory = null;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DOM elements
-    taskList = document.getElementById('taskList');
-    taskForm = document.getElementById('taskForm');
-    taskModal = document.getElementById('taskModal');
-    categoryModal = document.getElementById('categoryModal');
-    addTaskFab = document.getElementById('addTaskFab');
-    closeModal = document.getElementById('closeModal');
-    closeCategoryModal = document.getElementById('closeCategoryModal');
-    cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
-    modalTitle = document.getElementById('modalTitle');
-    submitBtn = document.getElementById('submitBtn');
-    createCategoryBtn = document.getElementById('createCategoryBtn');
-    themeToggle = document.getElementById('themeToggle');
-    languageToggle = document.getElementById('languageToggle');
-    repeatToggle = document.getElementById('repeatToggle');
-    repeatOptions = document.getElementById('repeatOptions');
-    customRepeat = document.getElementById('customRepeat');
-    categoriesList = document.getElementById('categoriesList');
-    categorySelector = document.getElementById('categorySelector');
-    manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
-    categoryManageModal = document.getElementById('categoryManageModal');
-    closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
-    categoryManageList = document.getElementById('categoryManageList');
-    addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
-
     initializeSettings();
     loadTasks();
     setupEventListeners();
@@ -198,6 +193,8 @@ function setupEventListeners() {
         btn.addEventListener('click', (e) => {
             currentSort = e.target.dataset.sort;
             updateSortButtons();
+            
+            
             displayTasks();
         });
     });
@@ -251,38 +248,6 @@ function setupEventListeners() {
             } else {
                 customRepeat.style.display = 'none';
             }
-        });
-    });
-
-    // Category management
-    manageCategoriesBtn.addEventListener('click', () => {
-        categoryManageModal.classList.add('show');
-        updateCategoryManageList();
-    });
-
-    closeCategoryManageModal.addEventListener('click', () => {
-        categoryManageModal.classList.remove('show');
-    });
-
-    addNewCategoryBtn.addEventListener('click', () => {
-        categoryModal.classList.add('show');
-        categoryManageModal.classList.remove('show');
-    });
-
-    // Handle color preset selection
-    document.querySelectorAll('.color-preset').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('categoryColor').value = btn.dataset.color;
-            document.querySelectorAll('.color-preset').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    // Handle icon selection
-    document.querySelectorAll('.icon-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
         });
     });
 
@@ -427,6 +392,7 @@ function updateLanguage() {
             option.textContent = option.dataset[`text${textKey.charAt(0).toUpperCase() + textKey.slice(1)}`];
         }
     });
+    
     
     // Redisplay tasks to update language
     displayTasks();
@@ -590,11 +556,6 @@ function filterTasks(tasks) {
             break;
     }
     
-    // Category filter
-    if (selectedCategory) {
-        filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
-    }
-    
     return filteredTasks;
 }
 
@@ -689,154 +650,6 @@ function createTaskHTML(task) {
             </div>
         </div>
     `;
-}
-
-// Update category sidebar
-function updateCategorySidebar() {
-    if (!categoriesList) return;
-    
-    categoriesList.innerHTML = `
-        <div class="category-item all-categories ${!selectedCategory ? 'active' : ''}" data-category="">
-            <i class="fas fa-layer-group"></i>
-            <span class="category-name">${currentLanguage === 'de' ? 'Alle Kategorien' : 'All Categories'}</span>
-        </div>
-        ${allCategories.map(cat => `
-            <div class="category-item ${selectedCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
-                <div class="category-icon" style="background-color: ${cat.color}">
-                    <i class="${cat.icon}" style="color: white"></i>
-                </div>
-                <span class="category-name">${cat.name}</span>
-            </div>
-        `).join('')}
-    `;
-
-    // Add click handlers
-    document.querySelectorAll('.category-item').forEach(item => {
-        item.addEventListener('click', () => {
-            selectedCategory = item.dataset.category;
-            updateCategorySidebar();
-            displayTasks();
-        });
-    });
-}
-
-// Update visual category selector in task form
-function updateCategorySelector() {
-    if (!categorySelector) return;
-    
-    const taskCategory = editingTaskId ? allTasks.find(t => t.id === editingTaskId)?.category : null;
-    
-    categorySelector.innerHTML = `
-        <div class="category-option ${!taskCategory ? 'active' : ''}" data-category="">
-            <i class="fas fa-times"></i>
-            <span class="category-name">${currentLanguage === 'de' ? 'Keine Kategorie' : 'No Category'}</span>
-        </div>
-        ${allCategories.map(cat => `
-            <div class="category-option ${taskCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
-                <div class="category-icon" style="background-color: ${cat.color}">
-                    <i class="${cat.icon}" style="color: white"></i>
-                </div>
-                <span class="category-name">${cat.name}</span>
-            </div>
-        `).join('')}
-        <div class="add-category-option" id="addCategoryBtn">
-            <i class="fas fa-plus"></i>
-            <span>${currentLanguage === 'de' ? 'Neue Kategorie' : 'New Category'}</span>
-        </div>
-    `;
-
-    // Add click handlers
-    document.querySelectorAll('.category-option').forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('active'));
-            option.classList.add('active');
-        });
-    });
-
-    const addCategoryBtn = document.getElementById('addCategoryBtn');
-    if (addCategoryBtn) {
-        addCategoryBtn.addEventListener('click', () => {
-            categoryModal.classList.add('show');
-        });
-    }
-}
-
-// Update category management list
-function updateCategoryManageList() {
-    if (!categoryManageList) return;
-    
-    categoryManageList.innerHTML = allCategories.map(cat => `
-        <div class="category-manage-item">
-            <div class="category-icon" style="background-color: ${cat.color}">
-                <i class="${cat.icon}" style="color: white"></i>
-            </div>
-            <span class="category-name">${cat.name}</span>
-            <div class="category-manage-actions">
-                <button class="category-manage-btn category-edit-btn" data-category="${cat.id}">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button class="category-manage-btn category-delete-btn" data-category="${cat.id}">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Add click handlers for edit and delete buttons
-    document.querySelectorAll('.category-edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = allCategories.find(c => c.id === btn.dataset.category);
-            if (category) {
-                editCategory(category);
-            }
-        });
-    });
-
-    document.querySelectorAll('.category-delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = allCategories.find(c => c.id === btn.dataset.category);
-            if (category && confirm(currentLanguage === 'de' ? 
-                `Möchten Sie die Kategorie "${category.name}" wirklich löschen?` : 
-                `Are you sure you want to delete the category "${category.name}"?`)) {
-                deleteCategory(category.id);
-            }
-        });
-    });
-}
-
-// Edit category
-function editCategory(category) {
-    document.getElementById('categoryName').value = category.name;
-    document.getElementById('categoryColor').value = category.color;
-    document.querySelectorAll('.icon-option').forEach(opt => {
-        opt.classList.toggle('active', opt.dataset.icon === category.icon);
-    });
-    
-    categoryModal.classList.add('show');
-    categoryManageModal.classList.remove('show');
-}
-
-// Delete category
-function deleteCategory(categoryId) {
-    allCategories = allCategories.filter(c => c.id !== categoryId);
-    saveCategories();
-    
-    // Update tasks that used this category
-    allTasks.forEach(task => {
-        if (task.category === categoryId) {
-            task.category = null;
-        }
-    });
-    
-    updateCategorySidebar();
-    updateCategoryManageList();
-    displayTasks();
-}
-
-// Get selected category from visual selector
-function getSelectedCategory() {
-    const activeOption = document.querySelector('.category-option.active');
-    return activeOption ? activeOption.dataset.category : '';
 }
 
 // Open modal for adding or editing task
@@ -935,6 +748,9 @@ async function handleCategoryFormSubmit(event) {
     // Save categories to localStorage
     saveCategories();
     
+    // Update category selects
+    updateCategorySelects();
+    
     // Close the modal
     closeCategoryModalHandler();
     
@@ -942,6 +758,195 @@ async function handleCategoryFormSubmit(event) {
     updateCategorySidebar();
     updateCategorySelector();
 }
+
+// DOM Elements for Categories
+const categoriesList = document.getElementById('categoriesList');
+const categorySelector = document.getElementById('categorySelector');
+const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+const categoryManageModal = document.getElementById('categoryManageModal');
+const closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
+const categoryManageList = document.getElementById('categoryManageList');
+const addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
+
+let selectedCategory = null;
+
+// Update category sidebar
+function updateCategorySidebar() {
+    categoriesList.innerHTML = `
+        <div class="category-item all-categories ${!selectedCategory ? 'active' : ''}" data-category="">
+            <i class="fas fa-layer-group"></i>
+            <span class="category-name">${currentLanguage === 'de' ? 'Alle Kategorien' : 'All Categories'}</span>
+        </div>
+        ${allCategories.map(cat => `
+            <div class="category-item ${selectedCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
+                <div class="category-icon" style="background-color: ${cat.color}">
+                    <i class="${cat.icon}" style="color: white"></i>
+                </div>
+                <span class="category-name">${cat.name}</span>
+            </div>
+        `).join('')}
+    `;
+
+    // Add click handlers
+    document.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('click', () => {
+            selectedCategory = item.dataset.category;
+            updateCategorySidebar();
+            displayTasks();
+        });
+    });
+}
+
+// Update visual category selector in task form
+function updateCategorySelector() {
+    const taskCategory = editingTaskId ? allTasks.find(t => t.id === editingTaskId)?.category : null;
+    
+    categorySelector.innerHTML = `
+        <div class="category-option ${!taskCategory ? 'active' : ''}" data-category="">
+            <i class="fas fa-times"></i>
+            <span class="category-name">${currentLanguage === 'de' ? 'Keine Kategorie' : 'No Category'}</span>
+        </div>
+        ${allCategories.map(cat => `
+            <div class="category-option ${taskCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">
+                <div class="category-icon" style="background-color: ${cat.color}">
+                    <i class="${cat.icon}" style="color: white"></i>
+                </div>
+                <span class="category-name">${cat.name}</span>
+            </div>
+        `).join('')}
+        <div class="add-category-option" id="addCategoryBtn">
+            <i class="fas fa-plus"></i>
+            <span>${currentLanguage === 'de' ? 'Neue Kategorie' : 'New Category'}</span>
+        </div>
+    `;
+
+    // Add click handlers
+    document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.category-option').forEach(opt => opt.classList.remove('active'));
+            option.classList.add('active');
+        });
+    });
+
+    document.getElementById('addCategoryBtn').addEventListener('click', () => {
+        categoryModal.classList.add('show');
+    });
+}
+
+// Update category management list
+function updateCategoryManageList() {
+    categoryManageList.innerHTML = allCategories.map(cat => `
+        <div class="category-manage-item">
+            <div class="category-icon" style="background-color: ${cat.color}">
+                <i class="${cat.icon}" style="color: white"></i>
+            </div>
+            <span class="category-name">${cat.name}</span>
+            <div class="category-manage-actions">
+                <button class="category-manage-btn category-edit-btn" data-category="${cat.id}">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="category-manage-btn category-delete-btn" data-category="${cat.id}">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Add click handlers for edit and delete buttons
+    document.querySelectorAll('.category-edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = allCategories.find(c => c.id === btn.dataset.category);
+            if (category) {
+                editCategory(category);
+            }
+        });
+    });
+
+    document.querySelectorAll('.category-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = allCategories.find(c => c.id === btn.dataset.category);
+            if (category && confirm(currentLanguage === 'de' ? 
+                `Möchten Sie die Kategorie "${category.name}" wirklich löschen?` : 
+                `Are you sure you want to delete the category "${category.name}"?`)) {
+                deleteCategory(category.id);
+            }
+        });
+    });
+}
+
+// Edit category
+function editCategory(category) {
+    document.getElementById('categoryName').value = category.name;
+    document.getElementById('categoryColor').value = category.color;
+    document.querySelectorAll('.icon-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.icon === category.icon);
+    });
+    
+    categoryModal.classList.add('show');
+    categoryManageModal.classList.remove('show');
+}
+
+// Delete category
+function deleteCategory(categoryId) {
+    allCategories = allCategories.filter(c => c.id !== categoryId);
+    saveCategories();
+    
+    // Update tasks that used this category
+    allTasks.forEach(task => {
+        if (task.category === categoryId) {
+            task.category = null;
+        }
+    });
+    
+    updateCategorySidebar();
+    updateCategoryManageList();
+    displayTasks();
+}
+
+// Event Listeners for Category Management
+manageCategoriesBtn.addEventListener('click', () => {
+    categoryManageModal.classList.add('show');
+    updateCategoryManageList();
+});
+
+closeCategoryManageModal.addEventListener('click', () => {
+    categoryManageModal.classList.remove('show');
+});
+
+addNewCategoryBtn.addEventListener('click', () => {
+    categoryModal.classList.add('show');
+    categoryManageModal.classList.remove('show');
+});
+
+
+// Get selected category from visual selector
+function getSelectedCategory() {
+    const activeOption = document.querySelector('.category-option.active');
+    return activeOption ? activeOption.dataset.category : '';
+}
+
+// Initialize categories
+document.addEventListener('DOMContentLoaded', function() {
+    updateCategorySidebar();
+    updateCategorySelector();
+});
+
+// Handle color preset selection
+document.querySelectorAll('.color-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('categoryColor').value = btn.dataset.color;
+        document.querySelectorAll('.color-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
+// Handle icon selection
+document.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
 
 // Handle form submission
 async function handleFormSubmit(event) {
