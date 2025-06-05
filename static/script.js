@@ -1,4 +1,4 @@
-Forconst API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 // Global variables
 let allTasks = [];
@@ -128,7 +128,6 @@ const categoryModal = document.getElementById('categoryModal');
 const addTaskFab = document.getElementById('addTaskFab');
 const closeModal = document.getElementById('closeModal');
 const closeCategoryModal = document.getElementById('closeCategoryModal');
-const cancelBtn = document.getElementById('cancelBtn');
 const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
 const modalTitle = document.getElementById('modalTitle');
 const submitBtn = document.getElementById('submitBtn');
@@ -207,7 +206,6 @@ function setupEventListeners() {
 
     // Modal controls
     closeModal.addEventListener('click', closeModalHandler);
-    cancelBtn.addEventListener('click', closeModalHandler);
     taskModal.addEventListener('click', (e) => {
         if (e.target === taskModal) {
             closeModalHandler();
@@ -280,7 +278,7 @@ function toggleTheme() {
 // Update theme icon
 function updateThemeIcon() {
     const icon = themeToggle.querySelector('i');
-    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+    icon.className = currentTheme === 'light' ? 'fas fa-moon' : 'fas fa-lightbulb';
 }
 
 // Toggle language
@@ -395,9 +393,6 @@ function updateLanguage() {
         }
     });
     
-    // Update cancel button
-    const cancelBtn = document.getElementById('cancelBtn');
-    if (cancelBtn) cancelBtn.textContent = currentLanguage === 'de' ? 'Abbrechen' : 'Cancel';
     
     // Redisplay tasks to update language
     displayTasks();

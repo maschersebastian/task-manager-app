@@ -689,13 +689,13 @@ input:checked + .slider:before {
     border-radius: 20px;
     width: 90%;
     max-width: 480px;
-    height: auto;
-    max-height: 85vh;
+    height: 85vh;
     animation: slideIn 0.3s;
     box-shadow: 0 10px 30px var(--shadow-color);
     display: flex;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
 }
 
 .modal-header {
@@ -714,22 +714,21 @@ input:checked + .slider:before {
     flex: 1;
     overflow-y: auto;
     padding: 20px 30px;
+    padding-bottom: 80px;  /* Add padding to account for fixed bottom bar */
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-height: 400px;  /* Ensure minimum height for content */
 }
 
-.modal-actions {
-    background: var(--surface-color);
-    padding: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
+.modal .form-group {
+    display: block !important;
     width: 100%;
-    border-top: 1px solid var(--border-color);
-    border-radius: 0 0 20px 20px;
-    flex-shrink: 0;
+    margin-bottom: 20px;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
+
 
 
 .modal-header h2 {
@@ -846,6 +845,7 @@ input:checked + .slider:before {
 /* Form Styles */
 .form-group {
     margin-bottom: 20px;
+    display: block !important;
 }
 
 .form-group label {
@@ -882,11 +882,21 @@ input:checked + .slider:before {
 
 /* Modal Actions */
 .modal-actions {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    padding: 20px 30px;
+    justify-content: center;
+    padding: 20px;
+    background: var(--surface-color);
     border-top: 1px solid var(--border-color);
+    border-radius: 0 0 20px 20px;
+    z-index: 1;
+}
+
+.modal-actions .btn-primary {
+    width: 200px;
 }
 
 /* Form Content */
