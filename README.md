@@ -18,35 +18,50 @@ A simple task management application built with SwiftUI that helps you organize 
 - Xcode 13.0+
 - Swift 5.5+
 
-## Installation
+## Installation & Testing
 
-1. Clone this repository
-2. Open SwiftUITaskManager.swift in Xcode
-3. Build and run the project
+1. Create a new Xcode project:
+   - Open Xcode
+   - Create a new project (File > New > Project)
+   - Choose "App" under iOS or macOS
+   - Set the interface to "SwiftUI"
+   - Choose your target platform (iOS or macOS)
 
-## Usage
+2. Replace the default ContentView.swift with the contents of SwiftUITaskManager.swift
 
-### Adding a Task
-1. Click the "+" button in the toolbar
-2. Fill in the task details:
-   - Title (required)
-   - Description (optional)
-   - Due Date
-   - Priority (Low, Medium, High)
-3. Click "Save"
+3. Build and run the project in Xcode (⌘R)
 
-### Managing Tasks
-- Mark tasks as complete by clicking the circle button
-- Edit a task by tapping on it
-- Delete a task by swiping left
-- Filter tasks using the segmented control at the top
+## Testing Instructions
 
-### Task Properties
-- Title: The name or brief description of the task
-- Description: Additional details about the task
-- Due Date: When the task needs to be completed
-- Priority: Low, Medium, or High
-- Status: Complete or Incomplete
+To test the key functionality:
+
+1. Launch the app in Xcode's simulator
+2. Test adding a new task:
+   - Tap the "+" button
+   - Fill in task details
+   - Save the task
+   - Verify it appears in the list
+
+3. Test editing a task:
+   - Tap on an existing task
+   - Modify its details
+   - Save changes
+   - Verify changes are reflected
+
+4. Test task completion:
+   - Tap the circle button next to a task
+   - Verify it's marked as completed
+   - Check if it appears in the "Completed" filter
+
+5. Test deleting a task:
+   - Swipe left on a task
+   - Tap delete
+   - Verify it's removed from the list
+
+6. Test persistence:
+   - Add some tasks
+   - Close and reopen the app
+   - Verify tasks are still there
 
 ## Converting from Python Version
 
@@ -58,3 +73,7 @@ This SwiftUI version is a direct conversion of the original Python/FastAPI task 
 4. Maintained the same data model structure and functionality
 
 The app provides the same core features as the Python version but with a native macOS/iOS interface.
+
+## Note for Testing
+
+Since this is a SwiftUI app, it needs to be run through Xcode to properly test the functionality. The provided SwiftUITaskManager.swift contains all the necessary code, but it needs to be integrated into an Xcode project for testing and running on simulators or devices.
