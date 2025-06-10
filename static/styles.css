@@ -1129,12 +1129,95 @@ input:checked + .slider:before {
 }
 
 /* Background customization specific styles */
+/* Background customization styles */
+.background-type-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.bg-type-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.bg-type-btn i {
+    font-size: 20px;
+}
+
+.bg-type-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.gradient-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.gradient-colors {
+    display: flex;
+    gap: 15px;
+}
+
+.color-input {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.color-input input[type="color"] {
+    width: 100%;
+    height: 40px;
+    padding: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-color);
+}
+
+.gradient-direction {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.gradient-direction select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-color);
+    color: var(--text-color);
+}
+
+.gradient-preview {
+    height: 60px;
+    border-radius: 12px;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+}
+
 #backgroundForm .color-picker {
     margin-bottom: 15px;
 }
 
 #backgroundForm .color-presets {
     margin-top: 10px;
+    display: flex;
+    gap: 8px;
 }
 
 #backgroundForm input[type="url"] {
@@ -1157,6 +1240,17 @@ input:checked + .slider:before {
     display: block;
     color: var(--text-secondary);
     font-size: 12px;
+}
+
+/* Fix for All Categories translation */
+[data-lang="en"] .lang-de,
+[data-lang="de"] .lang-en {
+    display: none;
+}
+
+[data-lang="en"] .lang-en,
+[data-lang="de"] .lang-de {
+    display: inline-block;
 }
 
 .modal-actions .btn-primary {

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://localhost:8001/api';
 
 // Global variables
 let allTasks = [];
@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeSettings() {
     currentLanguage = localStorage.getItem('language') || 'de';
     currentTheme = localStorage.getItem('theme') || 'light';
+    currentFilter = 'open'; // Set default filter to 'open'
     
     // Load saved categories
     const savedCategories = localStorage.getItem('categories');
@@ -198,6 +199,14 @@ function initializeSettings() {
     updateThemeIcon();
     updateLanguageIndicator();
     updateCategorySidebar();
+    
+    // Set active filter button
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === currentFilter) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 // Save categories to localStorage
@@ -319,14 +328,13 @@ function setupEventListeners() {
 
 // Setup background customization event listeners and logic
 function setupBackgroundCustomization() {
+    let currentBgType = localStorage.getItem('backgroundType') || 'color';
+
     // Open background modal
     backgroundToggle.addEventListener('click', () => {
         backgroundModal.classList.add('show');
-        // Load saved background settings
-        const savedColor = localStorage.getItem('backgroundColor') || '#f5f5f7';
-        const savedImage = localStorage.getItem('backgroundImage') || '';
-        backgroundColorInput.value = savedColor;
-        backgroundImageInput.value = savedImage;
+        loadSavedBackgroundSettings();
+        updateBackgroundTypeUI(currentBgType);
     });
 
     // Close background modal
@@ -336,21 +344,57 @@ function setupBackgroundCustomization() {
 
     // Reset background settings
     resetBackgroundBtn.addEventListener('click', () => {
+        currentBgType = 'color';
         backgroundColorInput.value = '#f5f5f7';
         backgroundImageInput.value = '';
-        applyBackgroundSettings('#f5f5f7', '');
-        localStorage.removeItem('backgroundColor');
-        localStorage.removeItem('backgroundImage');
+        document.getElementById('gradientStart').value = '#007aff';
+        document.getElementById('gradientEnd').value = '#00ff88';
+        document.getElementById('gradientDirection').value = 'to right';
+        
+        applyBackgroundSettings({
+            type: 'color',
+            color: '#f5f5f7'
+        });
+        
+        localStorage.removeItem('backgroundSettings');
+        localStorage.removeItem('backgroundType');
+        updateBackgroundTypeUI('color');
+    });
+
+    // Handle background type selection
+    document.querySelectorAll('.bg-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentBgType = btn.dataset.type;
+            updateBackgroundTypeUI(currentBgType);
+        });
     });
 
     // Handle background form submission
     backgroundForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const color = backgroundColorInput.value;
-        const image = backgroundImageInput.value.trim();
-        applyBackgroundSettings(color, image);
-        localStorage.setItem('backgroundColor', color);
-        localStorage.setItem('backgroundImage', image);
+        const settings = {
+            type: currentBgType
+        };
+
+        switch (currentBgType) {
+            case 'color':
+                settings.color = backgroundColorInput.value;
+                break;
+            case 'gradient':
+                settings.gradient = {
+                    start: document.getElementById('gradientStart').value,
+                    end: document.getElementById('gradientEnd').value,
+                    direction: document.getElementById('gradientDirection').value
+                };
+                break;
+            case 'image':
+                settings.image = backgroundImageInput.value.trim();
+                break;
+        }
+
+        applyBackgroundSettings(settings);
+        localStorage.setItem('backgroundType', currentBgType);
+        localStorage.setItem('backgroundSettings', JSON.stringify(settings));
         backgroundModal.classList.remove('show');
     });
 
@@ -361,20 +405,98 @@ function setupBackgroundCustomization() {
         });
     });
 
-    // Apply saved background settings on load
-    const savedColor = localStorage.getItem('backgroundColor') || '#f5f5f7';
-    const savedImage = localStorage.getItem('backgroundImage') || '';
-    applyBackgroundSettings(savedColor, savedImage);
+    // Update gradient preview on input changes
+    ['gradientStart', 'gradientEnd', 'gradientDirection'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateGradientPreview);
+    });
+
+    // Load saved settings on startup
+    loadSavedBackgroundSettings();
+}
+
+// Load saved background settings
+function loadSavedBackgroundSettings() {
+    const savedType = localStorage.getItem('backgroundType') || 'color';
+    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","color":"#f5f5f7"}');
+    
+    switch (savedSettings.type) {
+        case 'color':
+            backgroundColorInput.value = savedSettings.color || '#f5f5f7';
+            break;
+        case 'gradient':
+            if (savedSettings.gradient) {
+                document.getElementById('gradientStart').value = savedSettings.gradient.start;
+                document.getElementById('gradientEnd').value = savedSettings.gradient.end;
+                document.getElementById('gradientDirection').value = savedSettings.gradient.direction;
+                updateGradientPreview();
+            }
+            break;
+        case 'image':
+            backgroundImageInput.value = savedSettings.image || '';
+            break;
+    }
+    
+    updateBackgroundTypeUI(savedType);
+    applyBackgroundSettings(savedSettings);
+}
+
+// Update background type UI
+function updateBackgroundTypeUI(type) {
+    document.querySelectorAll('.bg-type-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === type);
+    });
+
+    document.getElementById('colorOptions').style.display = type === 'color' ? 'block' : 'none';
+    document.getElementById('gradientOptions').style.display = type === 'gradient' ? 'block' : 'none';
+    document.getElementById('imageOptions').style.display = type === 'image' ? 'block' : 'none';
+}
+
+// Update gradient preview
+function updateGradientPreview() {
+    const start = document.getElementById('gradientStart').value;
+    const end = document.getElementById('gradientEnd').value;
+    const direction = document.getElementById('gradientDirection').value;
+    const preview = document.getElementById('gradientPreview');
+    
+    preview.style.background = `linear-gradient(${direction}, ${start}, ${end})`;
 }
 
 // Apply background settings to document body
-function applyBackgroundSettings(color, image) {
-    document.documentElement.style.setProperty('--bg-color', color);
-    if (image) {
-        document.documentElement.style.setProperty('--bg-image', `url('${image}')`);
-    } else {
-        document.documentElement.style.setProperty('--bg-image', 'none');
+function applyBackgroundSettings(settings) {
+    switch (settings.type) {
+        case 'color':
+            document.documentElement.style.setProperty('--bg-color', settings.color);
+            document.documentElement.style.setProperty('--bg-image', 'none');
+            break;
+        case 'gradient':
+            const { start, end, direction } = settings.gradient;
+            document.documentElement.style.setProperty('--bg-color', 'transparent');
+            document.documentElement.style.setProperty('--bg-image', `linear-gradient(${direction}, ${start}, ${end})`);
+            break;
+        case 'image':
+            document.documentElement.style.setProperty('--bg-color', 'transparent');
+            document.documentElement.style.setProperty('--bg-image', settings.image ? `url('${settings.image}')` : 'none');
+            break;
     }
+}
+
+// Update language in UI with immediate category translation
+function updateLanguage() {
+    const t = translations[currentLanguage];
+    
+    // Update all language-specific elements
+    document.querySelectorAll('[data-text-' + currentLanguage + ']').forEach(el => {
+        el.textContent = el.dataset['text' + currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1)];
+    });
+    
+    // Update "All Categories" text immediately
+    const allCategoriesBtn = document.querySelector('.all-categories .category-name');
+    if (allCategoriesBtn) {
+        allCategoriesBtn.textContent = currentLanguage === 'de' ? 'Alle Kategorien' : 'All Categories';
+    }
+    
+    // Rest of the updateLanguage function...
+    // [Previous updateLanguage code continues here]
 }
 
 // Modal handlers

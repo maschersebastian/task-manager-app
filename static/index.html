@@ -34,9 +34,9 @@
         
         <!-- Navigation Menu -->
         <nav class="nav-menu">
-            <button class="nav-btn" data-filter="open" data-text-de="Offen" data-text-en="Open">Offen</button>
+            <button class="nav-btn active" data-filter="open" data-text-de="Offen" data-text-en="Open">Offen</button>
             <button class="nav-btn" data-filter="completed" data-text-de="Abgeschlossen" data-text-en="Completed">Abgeschlossen</button>
-            <button class="nav-btn active" data-filter="all" data-text-de="Alle" data-text-en="All">Alle</button>
+            <button class="nav-btn" data-filter="all" data-text-de="Alle" data-text-en="All">Alle</button>
         </nav>
 
         <!-- Sort Controls -->
@@ -315,6 +315,31 @@
             </div>
             <form id="backgroundForm">
                 <div class="form-group">
+                    <label>
+                        <span class="lang-de">Hintergrundtyp:</span>
+                        <span class="lang-en">Background Type:</span>
+                    </label>
+                    <div class="background-type-selector">
+                        <button type="button" class="bg-type-btn active" data-type="color">
+                            <i class="fas fa-fill-drip"></i>
+                            <span class="lang-de">Farbe</span>
+                            <span class="lang-en">Color</span>
+                        </button>
+                        <button type="button" class="bg-type-btn" data-type="gradient">
+                            <i class="fas fa-palette"></i>
+                            <span class="lang-de">Farbverlauf</span>
+                            <span class="lang-en">Gradient</span>
+                        </button>
+                        <button type="button" class="bg-type-btn" data-type="image">
+                            <i class="fas fa-image"></i>
+                            <span class="lang-de">Bild</span>
+                            <span class="lang-en">Image</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solid Color Options -->
+                <div class="form-group" id="colorOptions">
                     <label for="backgroundColor">
                         <span class="lang-de">Hintergrundfarbe:</span>
                         <span class="lang-en">Background Color:</span>
@@ -329,16 +354,60 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="form-group">
+
+                <!-- Gradient Options -->
+                <div class="form-group" id="gradientOptions" style="display: none;">
+                    <label>
+                        <span class="lang-de">Farbverlauf:</span>
+                        <span class="lang-en">Gradient:</span>
+                    </label>
+                    <div class="gradient-controls">
+                        <div class="gradient-colors">
+                            <div class="color-input">
+                                <label class="lang-de">Startfarbe</label>
+                                <label class="lang-en">Start Color</label>
+                                <input type="color" id="gradientStart" value="#007aff">
+                            </div>
+                            <div class="color-input">
+                                <label class="lang-de">Endfarbe</label>
+                                <label class="lang-en">End Color</label>
+                                <input type="color" id="gradientEnd" value="#00ff88">
+                            </div>
+                        </div>
+                        <div class="gradient-direction">
+                            <label>
+                                <span class="lang-de">Richtung:</span>
+                                <span class="lang-en">Direction:</span>
+                            </label>
+                            <select id="gradientDirection">
+                                <option value="to right" selected>
+                                    <span class="lang-de">Nach rechts</span>
+                                    <span class="lang-en">To right</span>
+                                </option>
+                                <option value="to bottom">
+                                    <span class="lang-de">Nach unten</span>
+                                    <span class="lang-en">To bottom</span>
+                                </option>
+                                <option value="to bottom right">
+                                    <span class="lang-de">Diagonal</span>
+                                    <span class="lang-en">Diagonal</span>
+                                </option>
+                            </select>
+                        </div>
+                        <div class="gradient-preview" id="gradientPreview"></div>
+                    </div>
+                </div>
+
+                <!-- Image Options -->
+                <div class="form-group" id="imageOptions" style="display: none;">
                     <label for="backgroundImage">
                         <span class="lang-de">Hintergrundbild URL:</span>
                         <span class="lang-en">Background Image URL:</span>
                     </label>
                     <input type="url" id="backgroundImage" placeholder="https://example.com/image.jpg">
                     <small class="hint">
-                        <span class="lang-de">Leer lassen für einfarbigen Hintergrund</span>
-                        <span class="lang-en">Leave empty for solid color background</span>
+                        <span class="lang-de">Geben Sie die URL eines Bildes ein</span>
+                        <span class="lang-en">Enter the URL of an image</span>
                     </small>
                 </div>
                 
