@@ -6,7 +6,7 @@ let allCategories = [
     { id: 'work', name: 'Arbeit', color: '#007aff', icon: 'fas fa-briefcase' },
     { id: 'personal', name: 'Persönlich', color: '#34c759', icon: 'fas fa-home' }
 ];
-let currentFilter = 'all';
+let currentFilter = 'open';
 let currentSort = 'date';
 let editingTaskId = null;
 let currentLanguage = 'de';
@@ -117,7 +117,17 @@ const translations = {
         days: 'Day(s)',
         weeks: 'Week(s)',
         months: 'Month(s)',
-        years: 'Year(s)'
+        years: 'Year(s)',
+        category: 'Kategorie',
+        categoryLabel: 'Kategorie:',
+        noCategory: 'No Category',
+        newCategory: 'New Category',
+        allCategories: 'All Categories',
+        createCategory: 'Create Category',
+        categoryName: 'Name:',
+        categoryColor: 'Color:',
+        categoryIcon: 'Icon:',
+        categoryNameRequired: 'Category name is required.'
     }
 };
 
@@ -126,6 +136,7 @@ let taskList, taskForm, taskModal, categoryModal, addTaskFab, closeModal, closeC
 let cancelCategoryBtn, modalTitle, submitBtn, createCategoryBtn, themeToggle, languageToggle;
 let repeatToggle, repeatOptions, customRepeat, categoriesList, categorySelector;
 let manageCategoriesBtn, categoryManageModal, closeCategoryManageModal, categoryManageList, addNewCategoryBtn;
+let backgroundModal, backgroundToggle, closeBackgroundModal, backgroundForm, backgroundColorInput, backgroundImageInput, resetBackgroundBtn;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -154,9 +165,19 @@ document.addEventListener('DOMContentLoaded', function() {
     categoryManageList = document.getElementById('categoryManageList');
     addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
 
+    // Background customization modal elements
+    backgroundModal = document.getElementById('backgroundModal');
+    backgroundToggle = document.getElementById('backgroundToggle');
+    closeBackgroundModal = document.getElementById('closeBackgroundModal');
+    backgroundForm = document.getElementById('backgroundForm');
+    backgroundColorInput = document.getElementById('backgroundColor');
+    backgroundImageInput = document.getElementById('backgroundImage');
+    resetBackgroundBtn = document.getElementById('resetBackgroundBtn');
+
     initializeSettings();
     loadTasks();
     setupEventListeners();
+    setupBackgroundCustomization();
     updateLanguage();
 });
 
@@ -189,6 +210,8 @@ function setupEventListeners() {
     // Navigation buttons
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (btn.classList.contains('active')) return; // prevent race condition by ignoring clicks on active button
             setActiveFilter(e.target.dataset.filter);
         });
     });
@@ -294,6 +317,259 @@ function setupEventListeners() {
     });
 }
 
+// Setup background customization event listeners and logic
+function setupBackgroundCustomization() {
+    // Open background modal
+    backgroundToggle.addEventListener('click', () => {
+        backgroundModal.classList.add('show');
+        // Load saved background settings
+        const savedColor = localStorage.getItem('backgroundColor') || '#f5f5f7';
+        const savedImage = localStorage.getItem('backgroundImage') || '';
+        backgroundColorInput.value = savedColor;
+        backgroundImageInput.value = savedImage;
+    });
+
+    // Close background modal
+    closeBackgroundModal.addEventListener('click', () => {
+        backgroundModal.classList.remove('show');
+    });
+
+    // Reset background settings
+    resetBackgroundBtn.addEventListener('click', () => {
+        backgroundColorInput.value = '#f5f5f7';
+        backgroundImageInput.value = '';
+        applyBackgroundSettings('#f5f5f7', '');
+        localStorage.removeItem('backgroundColor');
+        localStorage.removeItem('backgroundImage');
+    });
+
+    // Handle background form submission
+    backgroundForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const color = backgroundColorInput.value;
+        const image = backgroundImageInput.value.trim();
+        applyBackgroundSettings(color, image);
+        localStorage.setItem('backgroundColor', color);
+        localStorage.setItem('backgroundImage', image);
+        backgroundModal.classList.remove('show');
+    });
+
+    // Color preset buttons
+    document.querySelectorAll('#backgroundModal .color-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+            backgroundColorInput.value = btn.dataset.color;
+        });
+    });
+
+    // Apply saved background settings on load
+    const savedColor = localStorage.getItem('backgroundColor') || '#f5f5f7';
+    const savedImage = localStorage.getItem('backgroundImage') || '';
+    applyBackgroundSettings(savedColor, savedImage);
+}
+
+// Apply background settings to document body
+function applyBackgroundSettings(color, image) {
+    document.documentElement.style.setProperty('--bg-color', color);
+    if (image) {
+        document.documentElement.style.setProperty('--bg-image', `url('${image}')`);
+    } else {
+        document.documentElement.style.setProperty('--bg-image', 'none');
+    }
+}
+
+// Modal handlers
+function openModal() {
+    editingTaskId = null;
+    taskForm.reset();
+    const t = translations[currentLanguage];
+    modalTitle.textContent = t.newReminder;
+    submitBtn.textContent = t.create;
+    taskModal.classList.add('show');
+}
+
+function closeModalHandler() {
+    taskModal.classList.remove('show');
+    taskForm.reset();
+    editingTaskId = null;
+}
+
+function closeCategoryModalHandler() {
+    categoryModal.classList.remove('show');
+    document.getElementById('categoryForm').reset();
+}
+
+// Show loading state
+function showLoading() {
+    const t = translations[currentLanguage];
+    taskList.innerHTML = `<div class="loading">${t.loading}</div>`;
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Task management functions
+function toggleTaskCompletion(taskId, isCompleted) {
+    // This would normally make an API call to update the task
+    console.log(`Toggle task ${taskId} completion to ${isCompleted}`);
+    
+    // For demo purposes, update the local task
+    const task = allTasks.find(t => t.id === taskId);
+    if (task) {
+        task.is_completed = isCompleted;
+        displayTasks();
+    }
+}
+
+function editTask(taskId) {
+    const task = allTasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    editingTaskId = taskId;
+    const t = translations[currentLanguage];
+    modalTitle.textContent = t.editReminder;
+    submitBtn.textContent = t.update;
+    
+    // Populate form with task data
+    document.getElementById('title').value = task.title;
+    document.getElementById('description').value = task.description || '';
+    
+    const dueDate = new Date(task.due_date);
+    document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+    document.getElementById('dueTime').value = dueDate.toTimeString().slice(0, 5);
+    
+    document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
+    
+    updateCategorySelector();
+    taskModal.classList.add('show');
+}
+
+function deleteTask(taskId) {
+    const t = translations[currentLanguage];
+    if (confirm(t.deleteConfirm)) {
+        // This would normally make an API call to delete the task
+        console.log(`Delete task ${taskId}`);
+        
+        // For demo purposes, remove from local array
+        allTasks = allTasks.filter(t => t.id !== taskId);
+        displayTasks();
+    }
+}
+
+// Form submission handlers
+function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const dueDate = document.getElementById('dueDate').value;
+    const dueTime = document.getElementById('dueTime').value;
+    const priority = document.querySelector('input[name="priority"]:checked').value;
+    
+    if (!title) {
+        const t = translations[currentLanguage];
+        alert(t.titleRequired);
+        return;
+    }
+    
+    if (!dueDate || !dueTime) {
+        const t = translations[currentLanguage];
+        alert(t.dueDateRequired);
+        return;
+    }
+    
+    const dueDatetime = new Date(`${dueDate}T${dueTime}`);
+    
+    // Get selected category
+    const selectedCategoryOption = document.querySelector('.category-option.active');
+    const category = selectedCategoryOption ? selectedCategoryOption.dataset.category : null;
+    
+    const taskData = {
+        id: editingTaskId || Date.now(), // Use timestamp as ID for demo
+        title,
+        description,
+        due_date: dueDatetime.toISOString(),
+        priority,
+        category: category || null,
+        is_completed: false
+    };
+    
+    if (editingTaskId) {
+        // Update existing task
+        const taskIndex = allTasks.findIndex(t => t.id === editingTaskId);
+        if (taskIndex !== -1) {
+            allTasks[taskIndex] = { ...allTasks[taskIndex], ...taskData };
+        }
+    } else {
+        // Add new task
+        allTasks.push(taskData);
+    }
+    
+    displayTasks();
+    closeModalHandler();
+}
+
+function handleCategoryFormSubmit(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('categoryName').value.trim();
+    const color = document.getElementById('categoryColor').value;
+    const selectedIcon = document.querySelector('.icon-option.active');
+    const icon = selectedIcon ? selectedIcon.dataset.icon : 'fas fa-folder';
+    
+    if (!name) {
+        const t = translations[currentLanguage];
+        alert(t.categoryNameRequired);
+        return;
+    }
+    
+    const newCategory = {
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name,
+        color,
+        icon
+    };
+    
+    allCategories.push(newCategory);
+    saveCategories();
+    updateCategorySidebar();
+    updateCategorySelector();
+    closeCategoryModalHandler();
+}
+
+function updateCategoryManageList() {
+    if (!categoryManageList) return;
+    
+    categoryManageList.innerHTML = allCategories.map(cat => `
+        <div class="category-manage-item">
+            <div class="category-icon" style="background-color: ${cat.color}">
+                <i class="${cat.icon}" style="color: white"></i>
+            </div>
+            <span class="category-name">${cat.name}</span>
+            <div class="category-manage-actions">
+                <button class="category-manage-btn category-delete-btn" onclick="deleteCategory('${cat.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function deleteCategory(categoryId) {
+    const t = translations[currentLanguage];
+    if (confirm(t.deleteConfirm)) {
+        allCategories = allCategories.filter(cat => cat.id !== categoryId);
+        saveCategories();
+        updateCategorySidebar();
+        updateCategorySelector();
+        updateCategoryManageList();
+        displayTasks();
+    }
+}
+
 // Update sort buttons
 function updateSortButtons() {
     document.querySelectorAll('.sort-btn').forEach(btn => {
@@ -323,6 +599,9 @@ async function toggleLanguage() {
     localStorage.setItem('language', currentLanguage);
     updateLanguageIndicator();
     updateLanguage();
+    
+    // Update category sidebar to fix translation issue
+    updateCategorySidebar();
     
     // Translate existing tasks
     await translateTasks();
@@ -759,366 +1038,4 @@ function updateCategorySelector() {
             categoryModal.classList.add('show');
         });
     }
-}
-
-// Update category management list
-function updateCategoryManageList() {
-    if (!categoryManageList) return;
-    
-    categoryManageList.innerHTML = allCategories.map(cat => `
-        <div class="category-manage-item">
-            <div class="category-icon" style="background-color: ${cat.color}">
-                <i class="${cat.icon}" style="color: white"></i>
-            </div>
-            <span class="category-name">${cat.name}</span>
-            <div class="category-manage-actions">
-                <button class="category-manage-btn category-edit-btn" data-category="${cat.id}">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-                <button class="category-manage-btn category-delete-btn" data-category="${cat.id}">
-                    <i class="fas fa-trash-alt"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-
-    // Add click handlers for edit and delete buttons
-    document.querySelectorAll('.category-edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = allCategories.find(c => c.id === btn.dataset.category);
-            if (category) {
-                editCategory(category);
-            }
-        });
-    });
-
-    document.querySelectorAll('.category-delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = allCategories.find(c => c.id === btn.dataset.category);
-            if (category && confirm(currentLanguage === 'de' ? 
-                `Möchten Sie die Kategorie "${category.name}" wirklich löschen?` : 
-                `Are you sure you want to delete the category "${category.name}"?`)) {
-                deleteCategory(category.id);
-            }
-        });
-    });
-}
-
-// Edit category
-function editCategory(category) {
-    document.getElementById('categoryName').value = category.name;
-    document.getElementById('categoryColor').value = category.color;
-    document.querySelectorAll('.icon-option').forEach(opt => {
-        opt.classList.toggle('active', opt.dataset.icon === category.icon);
-    });
-    
-    categoryModal.classList.add('show');
-    categoryManageModal.classList.remove('show');
-}
-
-// Delete category
-function deleteCategory(categoryId) {
-    allCategories = allCategories.filter(c => c.id !== categoryId);
-    saveCategories();
-    
-    // Update tasks that used this category
-    allTasks.forEach(task => {
-        if (task.category === categoryId) {
-            task.category = null;
-        }
-    });
-    
-    updateCategorySidebar();
-    updateCategoryManageList();
-    displayTasks();
-}
-
-// Get selected category from visual selector
-function getSelectedCategory() {
-    const activeOption = document.querySelector('.category-option.active');
-    return activeOption ? activeOption.dataset.category : '';
-}
-
-// Open modal for adding or editing task
-function openModal(task = null) {
-    const t = translations[currentLanguage];
-    editingTaskId = task ? task.id : null;
-    
-    if (task) {
-        modalTitle.textContent = t.editReminder;
-        submitBtn.textContent = t.update;
-        
-        // Fill form with task data
-        document.getElementById('title').value = task.title;
-        document.getElementById('description').value = task.description || '';
-        document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
-        updateCategorySelector();
-        
-        // Format date and time for inputs
-        const dueDate = new Date(task.due_date);
-        document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
-        document.getElementById('dueTime').value = dueDate.toTimeString().slice(0, 5);
-        
-        // Handle repeat settings if available
-        if (task.repeat_type) {
-            repeatToggle.checked = true;
-            repeatOptions.style.display = 'block';
-            
-            document.querySelectorAll('.repeat-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-repeat="${task.repeat_type}"]`).classList.add('active');
-            
-            if (task.repeat_type === 'custom') {
-                customRepeat.style.display = 'block';
-                document.getElementById('customInterval').value = task.repeat_interval || 1;
-                document.getElementById('customUnit').value = task.repeat_unit || 'days';
-            }
-        }
-    } else {
-        modalTitle.textContent = t.newReminder;
-        submitBtn.textContent = t.create;
-        taskForm.reset();
-        document.querySelector('input[name="priority"][value="medium"]').checked = true;
-        repeatOptions.style.display = 'none';
-        customRepeat.style.display = 'none';
-        updateCategorySelector();
-        
-        // Set default date to today
-        const today = new Date();
-        document.getElementById('dueDate').value = today.toISOString().split('T')[0];
-        document.getElementById('dueTime').value = '12:00';
-    }
-    
-    taskModal.classList.add('show');
-    document.getElementById('title').focus();
-}
-
-// Close modal
-function closeModalHandler() {
-    taskModal.classList.remove('show');
-    taskForm.reset();
-    editingTaskId = null;
-    repeatOptions.style.display = 'none';
-    customRepeat.style.display = 'none';
-}
-
-// Close category modal
-function closeCategoryModalHandler() {
-    categoryModal.classList.remove('show');
-    document.getElementById('categoryForm').reset();
-    document.querySelectorAll('.icon-option').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('.icon-option').classList.add('active');
-}
-
-// Handle category form submission
-async function handleCategoryFormSubmit(event) {
-    event.preventDefault();
-    
-    const name = document.getElementById('categoryName').value.trim();
-    const color = document.getElementById('categoryColor').value;
-    const icon = document.querySelector('.icon-option.active').dataset.icon;
-    
-    if (!name) {
-        showError('Kategorie-Name ist erforderlich.');
-        return;
-    }
-    
-    const newCategory = {
-        id: name.toLowerCase().replace(/\s+/g, '-'),
-        name: name,
-        color: color,
-        icon: icon
-    };
-    
-    // Add new category to the list
-    allCategories.push(newCategory);
-    
-    // Save categories to localStorage
-    saveCategories();
-    
-    // Close the modal
-    closeCategoryModalHandler();
-    
-    // Update all category displays
-    updateCategorySidebar();
-    updateCategorySelector();
-}
-
-// Handle form submission
-async function handleFormSubmit(event) {
-    event.preventDefault();
-    const t = translations[currentLanguage];
-    
-    const dueDateValue = document.getElementById('dueDate').value;
-    const dueTimeValue = document.getElementById('dueTime').value;
-    
-    // Validate and parse the date
-    let parsedDate = null;
-    if (dueDateValue && dueTimeValue) {
-        try {
-            parsedDate = new Date(`${dueDateValue}T${dueTimeValue}`);
-            if (isNaN(parsedDate.getTime())) {
-                throw new Error('Invalid date format');
-            }
-        } catch (dateError) {
-            showError(t.invalidDate);
-            return;
-        }
-    }
-    
-    const selectedPriority = document.querySelector('input[name="priority"]:checked');
-    
-    const taskData = {
-        title: document.getElementById('title').value.trim(),
-        description: document.getElementById('description').value.trim() || null,
-        due_date: parsedDate ? parsedDate.toISOString() : null,
-        priority: selectedPriority ? selectedPriority.value : 'medium',
-        category: getSelectedCategory() || null,
-        is_completed: false
-    };
-
-    // Handle repeat settings
-    if (repeatToggle.checked) {
-        const activeRepeatBtn = document.querySelector('.repeat-btn.active');
-        if (activeRepeatBtn) {
-            taskData.repeat_type = activeRepeatBtn.dataset.repeat;
-            
-            if (taskData.repeat_type === 'custom') {
-                taskData.repeat_interval = parseInt(document.getElementById('customInterval').value) || 1;
-                taskData.repeat_unit = document.getElementById('customUnit').value;
-            }
-        }
-    }
-
-    if (!taskData.title) {
-        showError(t.titleRequired);
-        return;
-    }
-
-    if (!taskData.due_date) {
-        showError(t.dueDateRequired);
-        return;
-    }
-
-    try {
-        let response;
-        if (editingTaskId) {
-            // Update existing task
-            response = await fetch(`${API_BASE_URL}/tasks/${editingTaskId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(taskData)
-            });
-        } else {
-            // Create new task
-            response = await fetch(`${API_BASE_URL}/tasks`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(taskData)
-            });
-        }
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
-        }
-
-        closeModalHandler();
-        loadTasks(); // Reload tasks to show the changes
-    } catch (error) {
-        console.error('Error saving task:', error);
-        showError(t.errorSaving + ' ' + error.message);
-    }
-}
-
-// Toggle task completion status
-async function toggleTaskCompletion(taskId, isCompleted) {
-    const t = translations[currentLanguage];
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                is_completed: isCompleted
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        loadTasks(); // Reload tasks to reflect the change
-    } catch (error) {
-        console.error('Error updating task:', error);
-        showError(t.errorUpdating);
-        loadTasks(); // Reload to revert any visual changes
-    }
-}
-
-// Edit task
-function editTask(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (task) {
-        openModal(task);
-    }
-}
-
-// Delete a task
-async function deleteTask(taskId) {
-    const t = translations[currentLanguage];
-    
-    if (!confirm(t.deleteConfirm)) {
-        return;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
-            method: 'DELETE'
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        loadTasks(); // Reload tasks to remove the deleted one
-    } catch (error) {
-        console.error('Error deleting task:', error);
-        showError(t.errorDeleting);
-    }
-}
-
-// Utility functions
-function showLoading() {
-    const t = translations[currentLanguage];
-    taskList.innerHTML = `<div class="loading">${t.loading}</div>`;
-}
-
-function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error';
-    errorDiv.textContent = message;
-    
-    // Remove existing error messages
-    const existingErrors = document.querySelectorAll('.error');
-    existingErrors.forEach(error => error.remove());
-    
-    // Add error message to body
-    document.body.appendChild(errorDiv);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-        errorDiv.remove();
-    }, 5000);
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }

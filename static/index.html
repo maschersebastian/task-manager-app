@@ -24,6 +24,11 @@
                 <button class="icon-btn" id="themeToggle" title="Theme ändern / Change Theme">
                     <i class="fas fa-moon"></i>
                 </button>
+
+                <!-- Background Customization Toggle -->
+                <button class="icon-btn" id="backgroundToggle" title="Hintergrund anpassen / Customize Background">
+                    <i class="fas fa-image"></i>
+                </button>
             </div>
         </header>
         
@@ -295,6 +300,59 @@
                     <span class="lang-en">New Category</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal for Background Customization -->
+    <div class="modal" id="backgroundModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="lang-de">Hintergrund anpassen</h2>
+                <h2 class="lang-en">Customize Background</h2>
+                <button class="close-btn" id="closeBackgroundModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="backgroundForm">
+                <div class="form-group">
+                    <label for="backgroundColor">
+                        <span class="lang-de">Hintergrundfarbe:</span>
+                        <span class="lang-en">Background Color:</span>
+                    </label>
+                    <div class="color-picker">
+                        <input type="color" id="backgroundColor" value="#f5f5f7">
+                        <div class="color-presets">
+                            <button type="button" class="color-preset" data-color="#f5f5f7" style="background-color: #f5f5f7;"></button>
+                            <button type="button" class="color-preset" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                            <button type="button" class="color-preset" data-color="#f0f0f0" style="background-color: #f0f0f0;"></button>
+                            <button type="button" class="color-preset" data-color="#e6e6e6" style="background-color: #e6e6e6;"></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="backgroundImage">
+                        <span class="lang-de">Hintergrundbild URL:</span>
+                        <span class="lang-en">Background Image URL:</span>
+                    </label>
+                    <input type="url" id="backgroundImage" placeholder="https://example.com/image.jpg">
+                    <small class="hint">
+                        <span class="lang-de">Leer lassen für einfarbigen Hintergrund</span>
+                        <span class="lang-en">Leave empty for solid color background</span>
+                    </small>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="resetBackgroundBtn">
+                        <span class="lang-de">Zurücksetzen</span>
+                        <span class="lang-en">Reset</span>
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span class="lang-de">Anwenden</span>
+                        <span class="lang-en">Apply</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
