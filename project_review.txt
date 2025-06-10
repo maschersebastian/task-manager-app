@@ -10,3 +10,15 @@ Wo stehen wir?
 
 Was machen wir als nächstes?
 --> als nächstes beginnen wir damit unsere Taskmanager mit weiter Essenziellen Funktionen auzustatten und uns dann um unsere wenig Priorisierteren Aufgaben kümmern. Außerdem werden wir den Gesamten Taskmanager dann als eine IOS App implementieren
+
+Was ist in den Vergangenen Sprints gut gelaufen?
+--> Wir konnten grundsäzöich all unsere Ideen umsetzen und uns ständig verbessern und inovative Gedanken in unseren Taskmanager einbauen und haben stand jezt einen zwar noch nicht ganz ausgereiften aber funktionstüchtigen Taskmanager 
+
+Wo stehen wir gerade und was kommt als nächstes?
+--> Wir haben jezt alle P0 Funktionen die wir uns überlegt haben in unseren Taskmanager eingebaut, welche auch Funktionieren. Außerdem sind wir auch schon dabei mehrer P1 Funktionen mit einzubauen. Durch probieren und überlegen kommt man immer wieder auf neue Gedanken, welche noch bei uns fehlen. Als nächstes werden wir uns der schönheitsgestaltung widmen und letzte Details perfektionieren so, dass der Veröffenlichung nicht mehr im Weg steht.
+
+Wie hat sich die Komplexität in unserem Projekt entwickelt?
+-->je weiter Fortgeschritten unser Projekt ist, desto komplexer wird es. Bei uns ist die Kompleexität ständig angestiegen damit man zuerst mal eine funktionierende Oberfläche hat und sich dann in die Tiefe einarbeiten kann.
+
+Wie gehen wir damit um?
+--> 
