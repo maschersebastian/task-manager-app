@@ -14,6 +14,11 @@
             <h1 class="lang-en">Reminders</h1>
             
             <div class="header-controls">
+                <!-- Background Customization Toggle -->
+                <button class="icon-btn" id="backgroundToggle" title="Hintergrund anpassen / Customize Background">
+                    <i class="fas fa-image"></i>
+                </button>
+                
                 <!-- Language Toggle -->
                 <button class="icon-btn" id="languageToggle" title="Sprache ändern / Change Language">
                     <i class="fas fa-language"></i>
@@ -23,11 +28,6 @@
                 <!-- Theme Toggle -->
                 <button class="icon-btn" id="themeToggle" title="Theme ändern / Change Theme">
                     <i class="fas fa-moon"></i>
-                </button>
-
-                <!-- Background Customization Toggle -->
-                <button class="icon-btn" id="backgroundToggle" title="Hintergrund anpassen / Customize Background">
-                    <i class="fas fa-image"></i>
                 </button>
             </div>
         </header>
@@ -340,18 +340,24 @@
 
                 <!-- Solid Color Options -->
                 <div class="form-group" id="colorOptions">
-                    <label for="backgroundColor">
+                    <label>
                         <span class="lang-de">Hintergrundfarbe:</span>
                         <span class="lang-en">Background Color:</span>
                     </label>
-                    <div class="color-picker">
-                        <input type="color" id="backgroundColor" value="#f5f5f7">
-                        <div class="color-presets">
-                            <button type="button" class="color-preset" data-color="#f5f5f7" style="background-color: #f5f5f7;"></button>
-                            <button type="button" class="color-preset" data-color="#ffffff" style="background-color: #ffffff;"></button>
-                            <button type="button" class="color-preset" data-color="#f0f0f0" style="background-color: #f0f0f0;"></button>
-                            <button type="button" class="color-preset" data-color="#e6e6e6" style="background-color: #e6e6e6;"></button>
-                        </div>
+                    <div class="background-presets">
+                        <button type="button" class="bg-preset standard" data-light="#f5f5f7" data-dark="#1c1c1e">
+                            <span class="lang-de">Standard</span>
+                            <span class="lang-en">Default</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#e8f0fe" data-dark="#1a1f2b">
+                            <span>Blue Gray</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#f0f7f0" data-dark="#1a2b1a">
+                            <span>Nature</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#fff5f5" data-dark="#2b1a1a">
+                            <span>Warm</span>
+                        </button>
                     </div>
                 </div>
 
@@ -361,54 +367,54 @@
                         <span class="lang-de">Farbverlauf:</span>
                         <span class="lang-en">Gradient:</span>
                     </label>
-                    <div class="gradient-controls">
-                        <div class="gradient-colors">
-                            <div class="color-input">
-                                <label class="lang-de">Startfarbe</label>
-                                <label class="lang-en">Start Color</label>
-                                <input type="color" id="gradientStart" value="#007aff">
-                            </div>
-                            <div class="color-input">
-                                <label class="lang-de">Endfarbe</label>
-                                <label class="lang-en">End Color</label>
-                                <input type="color" id="gradientEnd" value="#00ff88">
-                            </div>
-                        </div>
-                        <div class="gradient-direction">
-                            <label>
-                                <span class="lang-de">Richtung:</span>
-                                <span class="lang-en">Direction:</span>
-                            </label>
-                            <select id="gradientDirection">
-                                <option value="to right" selected>
-                                    <span class="lang-de">Nach rechts</span>
-                                    <span class="lang-en">To right</span>
-                                </option>
-                                <option value="to bottom">
-                                    <span class="lang-de">Nach unten</span>
-                                    <span class="lang-en">To bottom</span>
-                                </option>
-                                <option value="to bottom right">
-                                    <span class="lang-de">Diagonal</span>
-                                    <span class="lang-en">Diagonal</span>
-                                </option>
-                            </select>
-                        </div>
-                        <div class="gradient-preview" id="gradientPreview"></div>
+                    <div class="gradient-presets">
+                        <button type="button" class="gradient-preset" 
+                            data-light-start="#e0e8ff" data-light-end="#f5f0ff"
+                            data-dark-start="#1a1f2b" data-dark-end="#2b1a2b">
+                            <span>Ocean Breeze</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#e8fff0" data-light-end="#f0f0ff"
+                            data-dark-start="#1a2b1f" data-dark-end="#1f1a2b">
+                            <span>Spring Morning</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#fff0e8" data-light-end="#ffe8f0"
+                            data-dark-start="#2b1f1a" data-dark-end="#2b1a1f">
+                            <span>Sunset</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#f0f0f0" data-light-end="#ffffff"
+                            data-dark-start="#1c1c1e" data-dark-end="#2c2c2e">
+                            <span>Classic</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Image Options -->
                 <div class="form-group" id="imageOptions" style="display: none;">
-                    <label for="backgroundImage">
-                        <span class="lang-de">Hintergrundbild URL:</span>
-                        <span class="lang-en">Background Image URL:</span>
+                    <label>
+                        <span class="lang-de">Hintergrundbild:</span>
+                        <span class="lang-en">Background Image:</span>
                     </label>
-                    <input type="url" id="backgroundImage" placeholder="https://example.com/image.jpg">
-                    <small class="hint">
-                        <span class="lang-de">Geben Sie die URL eines Bildes ein</span>
-                        <span class="lang-en">Enter the URL of an image</span>
-                    </small>
+                    <div class="image-presets">
+                        <button type="button" class="image-preset" data-image="waves">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            <span>Waves</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="mountains">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                            <span>Mountains</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="forest">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                            <span>Forest</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="abstract">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+                            <span>Abstract</span>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="modal-actions">

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8001/api';
+const API_BASE_URL = '/api';
 
 // Global variables
 let allTasks = [];
@@ -174,6 +174,13 @@ document.addEventListener('DOMContentLoaded', function() {
     backgroundImageInput = document.getElementById('backgroundImage');
     resetBackgroundBtn = document.getElementById('resetBackgroundBtn');
 
+    console.log('Background elements:', {
+        backgroundModal,
+        backgroundToggle,
+        closeBackgroundModal,
+        backgroundForm
+    });
+
     initializeSettings();
     loadTasks();
     setupEventListeners();
@@ -195,6 +202,7 @@ function initializeSettings() {
     
     document.documentElement.setAttribute('data-lang', currentLanguage);
     document.documentElement.setAttribute('data-theme', currentTheme);
+    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
     
     updateThemeIcon();
     updateLanguageIndicator();
@@ -318,6 +326,19 @@ function setupEventListeners() {
         });
     });
 
+    // Background toggle
+    if (backgroundToggle) {
+        backgroundToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Background button clicked!');
+            if (backgroundModal) {
+                backgroundModal.classList.add('show');
+                loadSavedBackgroundSettings();
+                updateBackgroundTypeUI(localStorage.getItem('backgroundType') || 'color');
+            }
+        });
+    }
+
     // Escape key to close modal
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && taskModal.classList.contains('show')) {
@@ -331,35 +352,72 @@ function setupBackgroundCustomization() {
     let currentBgType = localStorage.getItem('backgroundType') || 'color';
 
     // Open background modal
-    backgroundToggle.addEventListener('click', () => {
-        backgroundModal.classList.add('show');
-        loadSavedBackgroundSettings();
-        updateBackgroundTypeUI(currentBgType);
-    });
+    if (backgroundToggle) {
+        backgroundToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Background toggle clicked');
+            if (backgroundModal) {
+                console.log('Opening background modal');
+                backgroundModal.classList.add('show');
+                loadSavedBackgroundSettings();
+                updateBackgroundTypeUI(currentBgType);
+            } else {
+                console.log('Background modal not found');
+            }
+        });
+    } else {
+        console.log('Background toggle button not found');
+    }
 
     // Close background modal
-    closeBackgroundModal.addEventListener('click', () => {
-        backgroundModal.classList.remove('show');
-    });
+    if (closeBackgroundModal) {
+        closeBackgroundModal.addEventListener('click', () => {
+            if (backgroundModal) {
+                backgroundModal.classList.remove('show');
+            }
+        });
+    }
+
+    // Close modal on outside click
+    if (backgroundModal) {
+        backgroundModal.addEventListener('click', (e) => {
+            if (e.target === backgroundModal) {
+                backgroundModal.classList.remove('show');
+            }
+        });
+    }
 
     // Reset background settings
-    resetBackgroundBtn.addEventListener('click', () => {
-        currentBgType = 'color';
-        backgroundColorInput.value = '#f5f5f7';
-        backgroundImageInput.value = '';
-        document.getElementById('gradientStart').value = '#007aff';
-        document.getElementById('gradientEnd').value = '#00ff88';
-        document.getElementById('gradientDirection').value = 'to right';
-        
-        applyBackgroundSettings({
-            type: 'color',
-            color: '#f5f5f7'
+    if (resetBackgroundBtn) {
+        resetBackgroundBtn.addEventListener('click', () => {
+            currentBgType = 'color';
+            
+            // Reset to default theme colors
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const defaultColor = isDarkMode ? '#1c1c1e' : '#f5f5f7';
+            
+            applyBackgroundSettings({
+                type: 'color',
+                color: defaultColor
+            });
+            
+            localStorage.removeItem('backgroundSettings');
+            localStorage.removeItem('backgroundType');
+            updateBackgroundTypeUI('color');
+            
+            // Reset active presets
+            document.querySelectorAll('.bg-preset, .gradient-preset, .image-preset').forEach(preset => {
+                preset.classList.remove('active');
+            });
+            
+            // Set standard as active
+            const standardPreset = document.querySelector('.bg-preset.standard');
+            if (standardPreset) {
+                standardPreset.classList.add('active');
+            }
         });
-        
-        localStorage.removeItem('backgroundSettings');
-        localStorage.removeItem('backgroundType');
-        updateBackgroundTypeUI('color');
-    });
+    }
 
     // Handle background type selection
     document.querySelectorAll('.bg-type-btn').forEach(btn => {
@@ -369,45 +427,78 @@ function setupBackgroundCustomization() {
         });
     });
 
-    // Handle background form submission
-    backgroundForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const settings = {
-            type: currentBgType
-        };
-
-        switch (currentBgType) {
-            case 'color':
-                settings.color = backgroundColorInput.value;
-                break;
-            case 'gradient':
-                settings.gradient = {
-                    start: document.getElementById('gradientStart').value,
-                    end: document.getElementById('gradientEnd').value,
-                    direction: document.getElementById('gradientDirection').value
-                };
-                break;
-            case 'image':
-                settings.image = backgroundImageInput.value.trim();
-                break;
-        }
-
-        applyBackgroundSettings(settings);
-        localStorage.setItem('backgroundType', currentBgType);
-        localStorage.setItem('backgroundSettings', JSON.stringify(settings));
-        backgroundModal.classList.remove('show');
-    });
-
-    // Color preset buttons
-    document.querySelectorAll('#backgroundModal .color-preset').forEach(btn => {
-        btn.addEventListener('click', () => {
-            backgroundColorInput.value = btn.dataset.color;
+    // Background color presets
+    document.querySelectorAll('.bg-preset').forEach(preset => {
+        preset.addEventListener('click', () => {
+            document.querySelectorAll('.bg-preset').forEach(p => p.classList.remove('active'));
+            preset.classList.add('active');
+            
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const color = isDarkMode ? preset.dataset.dark : preset.dataset.light;
+            
+            const settings = {
+                type: 'color',
+                color: color,
+                lightColor: preset.dataset.light,
+                darkColor: preset.dataset.dark,
+                preset: true
+            };
+            
+            applyBackgroundSettings(settings);
+            localStorage.setItem('backgroundType', 'color');
+            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
         });
     });
 
-    // Update gradient preview on input changes
-    ['gradientStart', 'gradientEnd', 'gradientDirection'].forEach(id => {
-        document.getElementById(id).addEventListener('input', updateGradientPreview);
+    // Gradient presets
+    document.querySelectorAll('.gradient-preset').forEach(preset => {
+        preset.addEventListener('click', () => {
+            document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
+            preset.classList.add('active');
+            
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const startColor = isDarkMode ? preset.dataset.darkStart : preset.dataset.lightStart;
+            const endColor = isDarkMode ? preset.dataset.darkEnd : preset.dataset.lightEnd;
+            
+            const settings = {
+                type: 'gradient',
+                lightStart: preset.dataset.lightStart,
+                lightEnd: preset.dataset.lightEnd,
+                darkStart: preset.dataset.darkStart,
+                darkEnd: preset.dataset.darkEnd,
+                preset: true
+            };
+            
+            applyGradientBackground(startColor, endColor);
+            localStorage.setItem('backgroundType', 'gradient');
+            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
+        });
+    });
+
+    // Image presets
+    document.querySelectorAll('.image-preset').forEach(preset => {
+        preset.addEventListener('click', () => {
+            document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
+            preset.classList.add('active');
+            
+            const imageName = preset.dataset.image;
+            
+            const settings = {
+                type: 'image',
+                imageName: imageName,
+                preset: true
+            };
+            
+            applyImageBackground(imageName);
+            localStorage.setItem('backgroundType', 'image');
+            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
+        });
+    });
+
+    // Handle background form submission
+    backgroundForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        backgroundModal.classList.remove('show');
     });
 
     // Load saved settings on startup
@@ -417,27 +508,56 @@ function setupBackgroundCustomization() {
 // Load saved background settings
 function loadSavedBackgroundSettings() {
     const savedType = localStorage.getItem('backgroundType') || 'color';
-    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","color":"#f5f5f7"}');
-    
-    switch (savedSettings.type) {
-        case 'color':
-            backgroundColorInput.value = savedSettings.color || '#f5f5f7';
-            break;
-        case 'gradient':
-            if (savedSettings.gradient) {
-                document.getElementById('gradientStart').value = savedSettings.gradient.start;
-                document.getElementById('gradientEnd').value = savedSettings.gradient.end;
-                document.getElementById('gradientDirection').value = savedSettings.gradient.direction;
-                updateGradientPreview();
-            }
-            break;
-        case 'image':
-            backgroundImageInput.value = savedSettings.image || '';
-            break;
-    }
+    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","preset":true,"lightColor":"#f5f5f7","darkColor":"#1c1c1e"}');
     
     updateBackgroundTypeUI(savedType);
-    applyBackgroundSettings(savedSettings);
+    
+    // Set active presets based on saved settings
+    if (savedSettings.preset) {
+        if (savedSettings.type === 'color' && savedSettings.lightColor) {
+            const preset = document.querySelector(`.bg-preset[data-light="${savedSettings.lightColor}"]`);
+            if (preset) {
+                document.querySelectorAll('.bg-preset').forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+            }
+        } else if (savedSettings.type === 'gradient' && savedSettings.lightStart) {
+            const preset = document.querySelector(`.gradient-preset[data-light-start="${savedSettings.lightStart}"]`);
+            if (preset) {
+                document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+            }
+        } else if (savedSettings.type === 'image' && savedSettings.imageName) {
+            const preset = document.querySelector(`.image-preset[data-image="${savedSettings.imageName}"]`);
+            if (preset) {
+                document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
+                preset.classList.add('active');
+            }
+        }
+    }
+    
+    // Apply the background based on current theme
+    updateBackgroundForTheme();
+}
+
+// Update background for current theme
+function updateBackgroundForTheme() {
+    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","preset":true,"lightColor":"#f5f5f7","darkColor":"#1c1c1e"}');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    if (savedSettings.preset) {
+        if (savedSettings.type === 'color') {
+            const color = isDarkMode ? savedSettings.darkColor : savedSettings.lightColor;
+            applyBackgroundSettings({ type: 'color', color: color });
+        } else if (savedSettings.type === 'gradient') {
+            const startColor = isDarkMode ? savedSettings.darkStart : savedSettings.lightStart;
+            const endColor = isDarkMode ? savedSettings.darkEnd : savedSettings.lightEnd;
+            applyGradientBackground(startColor, endColor);
+        } else if (savedSettings.type === 'image') {
+            applyImageBackground(savedSettings.imageName);
+        }
+    } else {
+        applyBackgroundSettings(savedSettings);
+    }
 }
 
 // Update background type UI
@@ -469,15 +589,38 @@ function applyBackgroundSettings(settings) {
             document.documentElement.style.setProperty('--bg-image', 'none');
             break;
         case 'gradient':
-            const { start, end, direction } = settings.gradient;
-            document.documentElement.style.setProperty('--bg-color', 'transparent');
-            document.documentElement.style.setProperty('--bg-image', `linear-gradient(${direction}, ${start}, ${end})`);
+            if (settings.gradient) {
+                const { start, end, direction } = settings.gradient;
+                document.documentElement.style.setProperty('--bg-color', 'transparent');
+                document.documentElement.style.setProperty('--bg-image', `linear-gradient(${direction}, ${start}, ${end})`);
+            }
             break;
         case 'image':
             document.documentElement.style.setProperty('--bg-color', 'transparent');
             document.documentElement.style.setProperty('--bg-image', settings.image ? `url('${settings.image}')` : 'none');
             break;
     }
+}
+
+// Apply gradient background
+function applyGradientBackground(startColor, endColor) {
+    const gradient = `linear-gradient(135deg, ${startColor}, ${endColor})`;
+    document.documentElement.style.setProperty('--bg-image', gradient);
+    document.documentElement.style.setProperty('--bg-color', 'transparent');
+}
+
+// Apply image background (using gradients as placeholders)
+function applyImageBackground(imageName) {
+    const imageGradients = {
+        waves: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        mountains: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        forest: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        abstract: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+    };
+    
+    const gradient = imageGradients[imageName] || imageGradients.waves;
+    document.documentElement.style.setProperty('--bg-image', gradient);
+    document.documentElement.style.setProperty('--bg-color', 'transparent');
 }
 
 // Update language in UI with immediate category translation
@@ -706,6 +849,10 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
+    
+    // Update background colors for the new theme
+    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+    updateBackgroundForTheme();
 }
 
 // Update theme icon

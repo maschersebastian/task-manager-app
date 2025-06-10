@@ -1242,6 +1242,120 @@ input:checked + .slider:before {
     font-size: 12px;
 }
 
+/* Background presets */
+.background-presets,
+.gradient-presets,
+.image-presets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.bg-preset,
+.gradient-preset,
+.image-preset {
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    position: relative;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+.bg-preset:hover,
+.gradient-preset:hover,
+.image-preset:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.bg-preset.active,
+.gradient-preset.active,
+.image-preset.active {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+    color: white;
+}
+
+.bg-preset.standard {
+    background: linear-gradient(135deg, var(--bg-color) 0%, var(--surface-color) 100%);
+}
+
+.gradient-preset {
+    position: relative;
+    overflow: hidden;
+}
+
+.gradient-preset::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    border-radius: 10px;
+    z-index: 0;
+}
+
+.gradient-preset span {
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+}
+
+.image-preset {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+}
+
+.image-preset .image-preview {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+}
+
+.image-preset span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Fix modal scrolling issue */
+.modal-content {
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content form {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 30px;
+    padding-bottom: 100px;
+}
+
+.modal-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface-color);
+    padding: 20px 30px;
+    margin: 0 -30px -20px -30px;
+    border-top: 1px solid var(--border-color);
+    z-index: 10;
+    border-radius: 0 0 20px 20px;
+}
+
 /* Fix for All Categories translation */
 [data-lang="en"] .lang-de,
 [data-lang="de"] .lang-en {
