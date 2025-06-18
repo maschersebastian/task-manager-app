@@ -10,3 +10,7 @@ class Task(Base):
     due_date = Column(DateTime, nullable=False)
     is_completed = Column(Boolean, default=False)
     priority = Column(Enum('low', 'medium', 'high', name='priority_enum'), nullable=False, default='medium')
+    category = Column(String, nullable=True)  # category field for task categorization
+    repeat_type = Column(String, nullable=True)  # daily, weekly, monthly, yearly, custom
+    repeat_interval = Column(Integer, nullable=True)  # for custom repeats
+    repeat_unit = Column(String, nullable=True)  # days, weeks, months, years

@@ -1,49 +1,436 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="light-mode">
     <div class="container">
-        <h1>Task Manager</h1>
+        <header>
+            <h1 class="lang-de">Erinnerungen</h1>
+            <h1 class="lang-en">Reminders</h1>
+            
+            <div class="header-controls">
+                <!-- Background Customization Toggle -->
+                <button class="icon-btn" id="backgroundToggle" title="Hintergrund anpassen / Customize Background">
+                    <i class="fas fa-image"></i>
+                </button>
+                
+                <!-- Language Toggle -->
+                <button class="icon-btn" id="languageToggle" title="Sprache ändern / Change Language">
+                    <i class="fas fa-language"></i>
+                    <span class="lang-indicator">DE</span>
+                </button>
+                
+                <!-- Theme Toggle -->
+                <button class="icon-btn" id="themeToggle" title="Theme ändern / Change Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
         
-        <!-- Add Task Form -->
-        <div class="add-task-form">
-            <h2>Add New Task</h2>
-            <form id="taskForm">
-                <div class="form-group">
-                    <label for="title">Title:</label>
-                    <input type="text" id="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="dueDate">Due Date:</label>
-                    <input type="datetime-local" id="dueDate" required>
-                </div>
-                <div class="form-group">
-                    <label for="priority">Priority:</label>
-                    <select id="priority">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary">Add Task</button>
-            </form>
+        <!-- Navigation Menu -->
+        <nav class="nav-menu">
+            <button class="nav-btn active" data-filter="open" data-text-de="Offen" data-text-en="Open">Offen</button>
+            <button class="nav-btn" data-filter="completed" data-text-de="Abgeschlossen" data-text-en="Completed">Abgeschlossen</button>
+            <button class="nav-btn" data-filter="all" data-text-de="Alle" data-text-en="All">Alle</button>
+        </nav>
+
+        <!-- Sort Controls -->
+        <div class="sort-controls">
+            <div class="sort-buttons">
+                <button class="sort-btn active" data-sort="date">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="lang-de">Datum</span>
+                    <span class="lang-en">Date</span>
+                </button>
+                <button class="sort-btn" data-sort="priority">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="lang-de">Wichtigkeit</span>
+                    <span class="lang-en">Priority</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Task List -->
-        <div class="task-list">
-            <h2>Tasks</h2>
-            <div id="taskList"></div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Categories Sidebar -->
+            <div class="categories-sidebar">
+                <div class="categories-header">
+                    <h3 class="lang-de">Kategorien</h3>
+                    <h3 class="lang-en">Categories</h3>
+                </div>
+                <div class="categories-list" id="categoriesList">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+                <button class="category-manage-btn" id="manageCategoriesBtn">
+                    <i class="fas fa-cog"></i>
+                    <span class="lang-de">Verwalten</span>
+                    <span class="lang-en">Manage</span>
+                </button>
+            </div>
+
+            <!-- Task List -->
+            <div class="task-list">
+                <div id="taskList"></div>
+            </div>
         </div>
     </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="addTaskFab" title="Neue Erinnerung / New Reminder">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Modal for Adding/Editing Tasks -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle" class="lang-de">Neue Erinnerung</h2>
+                <h2 id="modalTitle-en" class="lang-en">New Reminder</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="title">Titel</label>
+                    <input type="text" id="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Beschreibung</label>
+                    <textarea id="description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Fälligkeitsdatum</label>
+                    <div class="date-time-picker">
+                        <div class="date-input-group">
+                            <input type="date" id="dueDate" required>
+                            <input type="time" id="dueTime" required>
+                        </div>
+                        
+                        <!-- Repeat Toggle -->
+                        <div class="repeat-toggle">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="repeatToggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Wiederholen</span>
+                        </div>
+                        
+                        <!-- Repeat Options -->
+                        <div class="repeat-options" id="repeatOptions" style="display: none;">
+                            <div class="repeat-buttons">
+                                <button type="button" class="repeat-btn active" data-repeat="daily">
+                                    <span>Täglich</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="weekly">
+                                    <span>Wöchentlich</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="monthly">
+                                    <span>Monatlich</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="yearly">
+                                    <span>Jährlich</span>
+                                </button>
+                                <button type="button" class="repeat-btn" data-repeat="custom">
+                                    <span>Eigene</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Custom Repeat -->
+                            <div class="custom-repeat" id="customRepeat" style="display: none;">
+                                <div class="custom-repeat-input">
+                                    <span class="lang-de">Alle</span>
+                                    <span class="lang-en">Every</span>
+                                    <input type="number" id="customInterval" min="1" value="1">
+                                    <select id="customUnit">
+                                        <option value="days" data-text-de="Tag(e)" data-text-en="Day(s)">Tag(e)</option>
+                                        <option value="weeks" data-text-de="Woche(n)" data-text-en="Week(s)">Woche(n)</option>
+                                        <option value="months" data-text-de="Monat(e)" data-text-en="Month(s)">Monat(e)</option>
+                                        <option value="years" data-text-de="Jahr(e)" data-text-en="Year(s)">Jahr(e)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Kategorie:</label>
+                    <div class="category-selector-visual" id="categorySelector">
+                        <!-- Categories will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Wichtigkeit:</label>
+                    <div class="priority-selector">
+                        <input type="radio" id="priority-low" name="priority" value="low">
+                        <label for="priority-low" class="priority-label low">
+                            <span class="priority-icon">●</span>
+                            <span>Niedrig</span>
+                        </label>
+                        
+                        <input type="radio" id="priority-medium" name="priority" value="medium" checked>
+                        <label for="priority-medium" class="priority-label medium">
+                            <span class="priority-icon">●</span>
+                            <span>Mittel</span>
+                        </label>
+                        
+                        <input type="radio" id="priority-high" name="priority" value="high">
+                        <label for="priority-high" class="priority-label high">
+                            <span class="priority-icon">●</span>
+                            <span>Hoch</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Creating Categories -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">Neue Kategorie erstellen</h2>
+                <button class="close-btn" id="closeCategoryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Name:</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryColor">Farbe:</label>
+                    <div class="color-picker">
+                        <input type="color" id="categoryColor" value="#007aff">
+                        <div class="color-presets">
+                            <button type="button" class="color-preset" data-color="#007aff" style="background-color: #007aff;"></button>
+                            <button type="button" class="color-preset" data-color="#ff3b30" style="background-color: #ff3b30;"></button>
+                            <button type="button" class="color-preset" data-color="#34c759" style="background-color: #34c759;"></button>
+                            <button type="button" class="color-preset" data-color="#ff9500" style="background-color: #ff9500;"></button>
+                            <button type="button" class="color-preset" data-color="#af52de" style="background-color: #af52de;"></button>
+                            <button type="button" class="color-preset" data-color="#ff2d92" style="background-color: #ff2d92;"></button>
+                            <button type="button" class="color-preset" data-color="#5ac8fa" style="background-color: #5ac8fa;"></button>
+                            <button type="button" class="color-preset" data-color="#ffcc00" style="background-color: #ffcc00;"></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Symbol:</label>
+                    <div class="icon-selector">
+                        <button type="button" class="icon-option active" data-icon="fas fa-briefcase">
+                            <i class="fas fa-briefcase"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-home">
+                            <i class="fas fa-home"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-heart">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-shopping-cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-car">
+                            <i class="fas fa-car"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-graduation-cap">
+                            <i class="fas fa-graduation-cap"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-dumbbell">
+                            <i class="fas fa-dumbbell"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-plane">
+                            <i class="fas fa-plane"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-book">
+                            <i class="fas fa-book"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-music">
+                            <i class="fas fa-music"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-camera">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button type="button" class="icon-option" data-icon="fas fa-gamepad">
+                            <i class="fas fa-gamepad"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelCategoryBtn">Abbrechen</button>
+                    <button type="submit" class="btn-primary" id="createCategoryBtn">Erstellen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Managing Categories -->
+    <div class="modal" id="categoryManageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="lang-de">Kategorien verwalten</h2>
+                <h2 class="lang-en">Manage Categories</h2>
+                <button class="close-btn" id="closeCategoryManageModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="category-manage-content">
+                <div class="category-manage-list" id="categoryManageList">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+                <button class="btn-primary" id="addNewCategoryBtn">
+                    <i class="fas fa-plus"></i>
+                    <span class="lang-de">Neue Kategorie</span>
+                    <span class="lang-en">New Category</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Background Customization -->
+    <div class="modal" id="backgroundModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="lang-de">Hintergrund anpassen</h2>
+                <h2 class="lang-en">Customize Background</h2>
+                <button class="close-btn" id="closeBackgroundModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="backgroundForm">
+                <div class="form-group">
+                    <label>
+                        <span class="lang-de">Hintergrundtyp:</span>
+                        <span class="lang-en">Background Type:</span>
+                    </label>
+                    <div class="background-type-selector">
+                        <button type="button" class="bg-type-btn active" data-type="color">
+                            <i class="fas fa-fill-drip"></i>
+                            <span class="lang-de">Farbe</span>
+                            <span class="lang-en">Color</span>
+                        </button>
+                        <button type="button" class="bg-type-btn" data-type="gradient">
+                            <i class="fas fa-palette"></i>
+                            <span class="lang-de">Farbverlauf</span>
+                            <span class="lang-en">Gradient</span>
+                        </button>
+                        <button type="button" class="bg-type-btn" data-type="image">
+                            <i class="fas fa-image"></i>
+                            <span class="lang-de">Bild</span>
+                            <span class="lang-en">Image</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Solid Color Options -->
+                <div class="form-group" id="colorOptions">
+                    <label>
+                        <span class="lang-de">Hintergrundfarbe:</span>
+                        <span class="lang-en">Background Color:</span>
+                    </label>
+                    <div class="background-presets">
+                        <button type="button" class="bg-preset standard" data-light="#f5f5f7" data-dark="#1c1c1e">
+                            <span class="lang-de">Standard</span>
+                            <span class="lang-en">Default</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#e8f0fe" data-dark="#1a1f2b">
+                            <span>Blue Gray</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#f0f7f0" data-dark="#1a2b1a">
+                            <span>Nature</span>
+                        </button>
+                        <button type="button" class="bg-preset" data-light="#fff5f5" data-dark="#2b1a1a">
+                            <span>Warm</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Gradient Options -->
+                <div class="form-group" id="gradientOptions" style="display: none;">
+                    <label>
+                        <span class="lang-de">Farbverlauf:</span>
+                        <span class="lang-en">Gradient:</span>
+                    </label>
+                    <div class="gradient-presets">
+                        <button type="button" class="gradient-preset" 
+                            data-light-start="#e0e8ff" data-light-end="#f5f0ff"
+                            data-dark-start="#1a1f2b" data-dark-end="#2b1a2b">
+                            <span>Ocean Breeze</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#e8fff0" data-light-end="#f0f0ff"
+                            data-dark-start="#1a2b1f" data-dark-end="#1f1a2b">
+                            <span>Spring Morning</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#fff0e8" data-light-end="#ffe8f0"
+                            data-dark-start="#2b1f1a" data-dark-end="#2b1a1f">
+                            <span>Sunset</span>
+                        </button>
+                        <button type="button" class="gradient-preset"
+                            data-light-start="#f0f0f0" data-light-end="#ffffff"
+                            data-dark-start="#1c1c1e" data-dark-end="#2c2c2e">
+                            <span>Classic</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Image Options -->
+                <div class="form-group" id="imageOptions" style="display: none;">
+                    <label>
+                        <span class="lang-de">Hintergrundbild:</span>
+                        <span class="lang-en">Background Image:</span>
+                    </label>
+                    <div class="image-presets">
+                        <button type="button" class="image-preset" data-image="waves">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            <span>Waves</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="mountains">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                            <span>Mountains</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="forest">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                            <span>Forest</span>
+                        </button>
+                        <button type="button" class="image-preset" data-image="abstract">
+                            <div class="image-preview" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+                            <span>Abstract</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="resetBackgroundBtn">
+                        <span class="lang-de">Zurücksetzen</span>
+                        <span class="lang-en">Reset</span>
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span class="lang-de">Anwenden</span>
+                        <span class="lang-en">Apply</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:8000/api';
 
 // Global variables
 let allTasks = [];
@@ -6,12 +6,11 @@ let allCategories = [
     { id: 'work', name: 'Arbeit', color: '#007aff', icon: 'fas fa-briefcase' },
     { id: 'personal', name: 'Persönlich', color: '#34c759', icon: 'fas fa-home' }
 ];
-let currentFilter = 'open';
+let currentFilter = 'all';
 let currentSort = 'date';
 let editingTaskId = null;
 let currentLanguage = 'de';
 let currentTheme = 'light';
-let selectedCategory = null;
 
 // Translation object
 const translations = {
@@ -117,74 +116,42 @@ const translations = {
         days: 'Day(s)',
         weeks: 'Week(s)',
         months: 'Month(s)',
-        years: 'Year(s)',
-        category: 'Kategorie',
-        categoryLabel: 'Kategorie:',
-        noCategory: 'No Category',
-        newCategory: 'New Category',
-        allCategories: 'All Categories',
-        createCategory: 'Create Category',
-        categoryName: 'Name:',
-        categoryColor: 'Color:',
-        categoryIcon: 'Icon:',
-        categoryNameRequired: 'Category name is required.'
+        years: 'Year(s)'
     }
 };
 
 // DOM Elements
-let taskList, taskForm, taskModal, categoryModal, addTaskFab, closeModal, closeCategoryModal;
-let cancelCategoryBtn, modalTitle, submitBtn, createCategoryBtn, themeToggle, languageToggle;
-let repeatToggle, repeatOptions, customRepeat, categoriesList, categorySelector;
-let manageCategoriesBtn, categoryManageModal, closeCategoryManageModal, categoryManageList, addNewCategoryBtn;
-let backgroundModal, backgroundToggle, closeBackgroundModal, backgroundForm, backgroundColorInput, backgroundImageInput, resetBackgroundBtn;
+const taskList = document.getElementById('taskList');
+const taskForm = document.getElementById('taskForm');
+const taskModal = document.getElementById('taskModal');
+const categoryModal = document.getElementById('categoryModal');
+const addTaskFab = document.getElementById('addTaskFab');
+const closeModal = document.getElementById('closeModal');
+const closeCategoryModal = document.getElementById('closeCategoryModal');
+const cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
+const modalTitle = document.getElementById('modalTitle');
+const submitBtn = document.getElementById('submitBtn');
+const createCategoryBtn = document.getElementById('createCategoryBtn');
+const themeToggle = document.getElementById('themeToggle');
+const languageToggle = document.getElementById('languageToggle');
+const repeatToggle = document.getElementById('repeatToggle');
+const repeatOptions = document.getElementById('repeatOptions');
+const customRepeat = document.getElementById('customRepeat');
+const categoriesList = document.getElementById('categoriesList');
+const categorySelector = document.getElementById('categorySelector');
+const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+const categoryManageModal = document.getElementById('categoryManageModal');
+const closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
+const categoryManageList = document.getElementById('categoryManageList');
+const addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
+
+let selectedCategory = null;
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DOM elements
-    taskList = document.getElementById('taskList');
-    taskForm = document.getElementById('taskForm');
-    taskModal = document.getElementById('taskModal');
-    categoryModal = document.getElementById('categoryModal');
-    addTaskFab = document.getElementById('addTaskFab');
-    closeModal = document.getElementById('closeModal');
-    closeCategoryModal = document.getElementById('closeCategoryModal');
-    cancelCategoryBtn = document.getElementById('cancelCategoryBtn');
-    modalTitle = document.getElementById('modalTitle');
-    submitBtn = document.getElementById('submitBtn');
-    createCategoryBtn = document.getElementById('createCategoryBtn');
-    themeToggle = document.getElementById('themeToggle');
-    languageToggle = document.getElementById('languageToggle');
-    repeatToggle = document.getElementById('repeatToggle');
-    repeatOptions = document.getElementById('repeatOptions');
-    customRepeat = document.getElementById('customRepeat');
-    categoriesList = document.getElementById('categoriesList');
-    categorySelector = document.getElementById('categorySelector');
-    manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
-    categoryManageModal = document.getElementById('categoryManageModal');
-    closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
-    categoryManageList = document.getElementById('categoryManageList');
-    addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
-
-    // Background customization modal elements
-    backgroundModal = document.getElementById('backgroundModal');
-    backgroundToggle = document.getElementById('backgroundToggle');
-    closeBackgroundModal = document.getElementById('closeBackgroundModal');
-    backgroundForm = document.getElementById('backgroundForm');
-    backgroundColorInput = document.getElementById('backgroundColor');
-    backgroundImageInput = document.getElementById('backgroundImage');
-    resetBackgroundBtn = document.getElementById('resetBackgroundBtn');
-
-    console.log('Background elements:', {
-        backgroundModal,
-        backgroundToggle,
-        closeBackgroundModal,
-        backgroundForm
-    });
-
     initializeSettings();
     loadTasks();
     setupEventListeners();
-    setupBackgroundCustomization();
     updateLanguage();
 });
 
@@ -192,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeSettings() {
     currentLanguage = localStorage.getItem('language') || 'de';
     currentTheme = localStorage.getItem('theme') || 'light';
-    currentFilter = 'open'; // Set default filter to 'open'
     
     // Load saved categories
     const savedCategories = localStorage.getItem('categories');
@@ -202,19 +168,10 @@ function initializeSettings() {
     
     document.documentElement.setAttribute('data-lang', currentLanguage);
     document.documentElement.setAttribute('data-theme', currentTheme);
-    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
     
     updateThemeIcon();
     updateLanguageIndicator();
     updateCategorySidebar();
-    
-    // Set active filter button
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.filter === currentFilter) {
-            btn.classList.add('active');
-        }
-    });
 }
 
 // Save categories to localStorage
@@ -227,8 +184,6 @@ function setupEventListeners() {
     // Navigation buttons
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (btn.classList.contains('active')) return; // prevent race condition by ignoring clicks on active button
             setActiveFilter(e.target.dataset.filter);
         });
     });
@@ -238,6 +193,8 @@ function setupEventListeners() {
         btn.addEventListener('click', (e) => {
             currentSort = e.target.dataset.sort;
             updateSortButtons();
+            
+            
             displayTasks();
         });
     });
@@ -294,545 +251,12 @@ function setupEventListeners() {
         });
     });
 
-    // Category management
-    manageCategoriesBtn.addEventListener('click', () => {
-        categoryManageModal.classList.add('show');
-        updateCategoryManageList();
-    });
-
-    closeCategoryManageModal.addEventListener('click', () => {
-        categoryManageModal.classList.remove('show');
-    });
-
-    addNewCategoryBtn.addEventListener('click', () => {
-        categoryModal.classList.add('show');
-        categoryManageModal.classList.remove('show');
-    });
-
-    // Handle color preset selection
-    document.querySelectorAll('.color-preset').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('categoryColor').value = btn.dataset.color;
-            document.querySelectorAll('.color-preset').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    // Handle icon selection
-    document.querySelectorAll('.icon-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-
-    // Background toggle
-    if (backgroundToggle) {
-        backgroundToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log('Background button clicked!');
-            if (backgroundModal) {
-                backgroundModal.classList.add('show');
-                loadSavedBackgroundSettings();
-                updateBackgroundTypeUI(localStorage.getItem('backgroundType') || 'color');
-            }
-        });
-    }
-
     // Escape key to close modal
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && taskModal.classList.contains('show')) {
             closeModalHandler();
         }
     });
-}
-
-// Setup background customization event listeners and logic
-function setupBackgroundCustomization() {
-    let currentBgType = localStorage.getItem('backgroundType') || 'color';
-
-    // Open background modal
-    if (backgroundToggle) {
-        backgroundToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Background toggle clicked');
-            if (backgroundModal) {
-                console.log('Opening background modal');
-                backgroundModal.classList.add('show');
-                loadSavedBackgroundSettings();
-                updateBackgroundTypeUI(currentBgType);
-            } else {
-                console.log('Background modal not found');
-            }
-        });
-    } else {
-        console.log('Background toggle button not found');
-    }
-
-    // Close background modal
-    if (closeBackgroundModal) {
-        closeBackgroundModal.addEventListener('click', () => {
-            if (backgroundModal) {
-                backgroundModal.classList.remove('show');
-            }
-        });
-    }
-
-    // Close modal on outside click
-    if (backgroundModal) {
-        backgroundModal.addEventListener('click', (e) => {
-            if (e.target === backgroundModal) {
-                backgroundModal.classList.remove('show');
-            }
-        });
-    }
-
-    // Reset background settings
-    if (resetBackgroundBtn) {
-        resetBackgroundBtn.addEventListener('click', () => {
-            currentBgType = 'color';
-            
-            // Reset to default theme colors
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const defaultColor = isDarkMode ? '#1c1c1e' : '#f5f5f7';
-            
-            applyBackgroundSettings({
-                type: 'color',
-                color: defaultColor
-            });
-            
-            localStorage.removeItem('backgroundSettings');
-            localStorage.removeItem('backgroundType');
-            updateBackgroundTypeUI('color');
-            
-            // Reset active presets
-            document.querySelectorAll('.bg-preset, .gradient-preset, .image-preset').forEach(preset => {
-                preset.classList.remove('active');
-            });
-            
-            // Set standard as active
-            const standardPreset = document.querySelector('.bg-preset.standard');
-            if (standardPreset) {
-                standardPreset.classList.add('active');
-            }
-        });
-    }
-
-    // Handle background type selection
-    document.querySelectorAll('.bg-type-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentBgType = btn.dataset.type;
-            updateBackgroundTypeUI(currentBgType);
-        });
-    });
-
-    // Background color presets
-    document.querySelectorAll('.bg-preset').forEach(preset => {
-        preset.addEventListener('click', () => {
-            document.querySelectorAll('.bg-preset').forEach(p => p.classList.remove('active'));
-            preset.classList.add('active');
-            
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const color = isDarkMode ? preset.dataset.dark : preset.dataset.light;
-            
-            const settings = {
-                type: 'color',
-                color: color,
-                lightColor: preset.dataset.light,
-                darkColor: preset.dataset.dark,
-                preset: true
-            };
-            
-            applyBackgroundSettings(settings);
-            localStorage.setItem('backgroundType', 'color');
-            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
-        });
-    });
-
-    // Gradient presets
-    document.querySelectorAll('.gradient-preset').forEach(preset => {
-        preset.addEventListener('click', () => {
-            document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
-            preset.classList.add('active');
-            
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const startColor = isDarkMode ? preset.dataset.darkStart : preset.dataset.lightStart;
-            const endColor = isDarkMode ? preset.dataset.darkEnd : preset.dataset.lightEnd;
-            
-            const settings = {
-                type: 'gradient',
-                lightStart: preset.dataset.lightStart,
-                lightEnd: preset.dataset.lightEnd,
-                darkStart: preset.dataset.darkStart,
-                darkEnd: preset.dataset.darkEnd,
-                preset: true
-            };
-            
-            applyGradientBackground(startColor, endColor);
-            localStorage.setItem('backgroundType', 'gradient');
-            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
-        });
-    });
-
-    // Image presets
-    document.querySelectorAll('.image-preset').forEach(preset => {
-        preset.addEventListener('click', () => {
-            document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
-            preset.classList.add('active');
-            
-            const imageName = preset.dataset.image;
-            
-            const settings = {
-                type: 'image',
-                imageName: imageName,
-                preset: true
-            };
-            
-            applyImageBackground(imageName);
-            localStorage.setItem('backgroundType', 'image');
-            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
-        });
-    });
-
-    // Handle background form submission
-    backgroundForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        backgroundModal.classList.remove('show');
-    });
-
-    // Load saved settings on startup
-    loadSavedBackgroundSettings();
-}
-
-// Load saved background settings
-function loadSavedBackgroundSettings() {
-    const savedType = localStorage.getItem('backgroundType') || 'color';
-    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","preset":true,"lightColor":"#f5f5f7","darkColor":"#1c1c1e"}');
-    
-    updateBackgroundTypeUI(savedType);
-    
-    // Set active presets based on saved settings
-    if (savedSettings.preset) {
-        if (savedSettings.type === 'color' && savedSettings.lightColor) {
-            const preset = document.querySelector(`.bg-preset[data-light="${savedSettings.lightColor}"]`);
-            if (preset) {
-                document.querySelectorAll('.bg-preset').forEach(p => p.classList.remove('active'));
-                preset.classList.add('active');
-            }
-        } else if (savedSettings.type === 'gradient' && savedSettings.lightStart) {
-            const preset = document.querySelector(`.gradient-preset[data-light-start="${savedSettings.lightStart}"]`);
-            if (preset) {
-                document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
-                preset.classList.add('active');
-            }
-        } else if (savedSettings.type === 'image' && savedSettings.imageName) {
-            const preset = document.querySelector(`.image-preset[data-image="${savedSettings.imageName}"]`);
-            if (preset) {
-                document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
-                preset.classList.add('active');
-            }
-        }
-    }
-    
-    // Apply the background based on current theme
-    updateBackgroundForTheme();
-}
-
-// Update background for current theme
-function updateBackgroundForTheme() {
-    const savedSettings = JSON.parse(localStorage.getItem('backgroundSettings') || '{"type":"color","preset":true,"lightColor":"#f5f5f7","darkColor":"#1c1c1e"}');
-    const isDarkMode = document.body.classList.contains('dark-mode');
-    
-    if (savedSettings.preset) {
-        if (savedSettings.type === 'color') {
-            const color = isDarkMode ? savedSettings.darkColor : savedSettings.lightColor;
-            applyBackgroundSettings({ type: 'color', color: color });
-        } else if (savedSettings.type === 'gradient') {
-            const startColor = isDarkMode ? savedSettings.darkStart : savedSettings.lightStart;
-            const endColor = isDarkMode ? savedSettings.darkEnd : savedSettings.lightEnd;
-            applyGradientBackground(startColor, endColor);
-        } else if (savedSettings.type === 'image') {
-            applyImageBackground(savedSettings.imageName);
-        }
-    } else {
-        applyBackgroundSettings(savedSettings);
-    }
-}
-
-// Update background type UI
-function updateBackgroundTypeUI(type) {
-    document.querySelectorAll('.bg-type-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.type === type);
-    });
-
-    document.getElementById('colorOptions').style.display = type === 'color' ? 'block' : 'none';
-    document.getElementById('gradientOptions').style.display = type === 'gradient' ? 'block' : 'none';
-    document.getElementById('imageOptions').style.display = type === 'image' ? 'block' : 'none';
-}
-
-// Update gradient preview
-function updateGradientPreview() {
-    const start = document.getElementById('gradientStart').value;
-    const end = document.getElementById('gradientEnd').value;
-    const direction = document.getElementById('gradientDirection').value;
-    const preview = document.getElementById('gradientPreview');
-    
-    preview.style.background = `linear-gradient(${direction}, ${start}, ${end})`;
-}
-
-// Apply background settings to document body
-function applyBackgroundSettings(settings) {
-    switch (settings.type) {
-        case 'color':
-            document.documentElement.style.setProperty('--bg-color', settings.color);
-            document.documentElement.style.setProperty('--bg-image', 'none');
-            break;
-        case 'gradient':
-            if (settings.gradient) {
-                const { start, end, direction } = settings.gradient;
-                document.documentElement.style.setProperty('--bg-color', 'transparent');
-                document.documentElement.style.setProperty('--bg-image', `linear-gradient(${direction}, ${start}, ${end})`);
-            }
-            break;
-        case 'image':
-            document.documentElement.style.setProperty('--bg-color', 'transparent');
-            document.documentElement.style.setProperty('--bg-image', settings.image ? `url('${settings.image}')` : 'none');
-            break;
-    }
-}
-
-// Apply gradient background
-function applyGradientBackground(startColor, endColor) {
-    const gradient = `linear-gradient(135deg, ${startColor}, ${endColor})`;
-    document.documentElement.style.setProperty('--bg-image', gradient);
-    document.documentElement.style.setProperty('--bg-color', 'transparent');
-}
-
-// Apply image background (using gradients as placeholders)
-function applyImageBackground(imageName) {
-    const imageGradients = {
-        waves: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        mountains: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        forest: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        abstract: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
-    };
-    
-    const gradient = imageGradients[imageName] || imageGradients.waves;
-    document.documentElement.style.setProperty('--bg-image', gradient);
-    document.documentElement.style.setProperty('--bg-color', 'transparent');
-}
-
-// Update language in UI with immediate category translation
-function updateLanguage() {
-    const t = translations[currentLanguage];
-    
-    // Update all language-specific elements
-    document.querySelectorAll('[data-text-' + currentLanguage + ']').forEach(el => {
-        el.textContent = el.dataset['text' + currentLanguage.charAt(0).toUpperCase() + currentLanguage.slice(1)];
-    });
-    
-    // Update "All Categories" text immediately
-    const allCategoriesBtn = document.querySelector('.all-categories .category-name');
-    if (allCategoriesBtn) {
-        allCategoriesBtn.textContent = currentLanguage === 'de' ? 'Alle Kategorien' : 'All Categories';
-    }
-    
-    // Rest of the updateLanguage function...
-    // [Previous updateLanguage code continues here]
-}
-
-// Modal handlers
-function openModal() {
-    editingTaskId = null;
-    taskForm.reset();
-    const t = translations[currentLanguage];
-    modalTitle.textContent = t.newReminder;
-    submitBtn.textContent = t.create;
-    taskModal.classList.add('show');
-}
-
-function closeModalHandler() {
-    taskModal.classList.remove('show');
-    taskForm.reset();
-    editingTaskId = null;
-}
-
-function closeCategoryModalHandler() {
-    categoryModal.classList.remove('show');
-    document.getElementById('categoryForm').reset();
-}
-
-// Show loading state
-function showLoading() {
-    const t = translations[currentLanguage];
-    taskList.innerHTML = `<div class="loading">${t.loading}</div>`;
-}
-
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Task management functions
-function toggleTaskCompletion(taskId, isCompleted) {
-    // This would normally make an API call to update the task
-    console.log(`Toggle task ${taskId} completion to ${isCompleted}`);
-    
-    // For demo purposes, update the local task
-    const task = allTasks.find(t => t.id === taskId);
-    if (task) {
-        task.is_completed = isCompleted;
-        displayTasks();
-    }
-}
-
-function editTask(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (!task) return;
-    
-    editingTaskId = taskId;
-    const t = translations[currentLanguage];
-    modalTitle.textContent = t.editReminder;
-    submitBtn.textContent = t.update;
-    
-    // Populate form with task data
-    document.getElementById('title').value = task.title;
-    document.getElementById('description').value = task.description || '';
-    
-    const dueDate = new Date(task.due_date);
-    document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
-    document.getElementById('dueTime').value = dueDate.toTimeString().slice(0, 5);
-    
-    document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
-    
-    updateCategorySelector();
-    taskModal.classList.add('show');
-}
-
-function deleteTask(taskId) {
-    const t = translations[currentLanguage];
-    if (confirm(t.deleteConfirm)) {
-        // This would normally make an API call to delete the task
-        console.log(`Delete task ${taskId}`);
-        
-        // For demo purposes, remove from local array
-        allTasks = allTasks.filter(t => t.id !== taskId);
-        displayTasks();
-    }
-}
-
-// Form submission handlers
-function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const title = document.getElementById('title').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const dueDate = document.getElementById('dueDate').value;
-    const dueTime = document.getElementById('dueTime').value;
-    const priority = document.querySelector('input[name="priority"]:checked').value;
-    
-    if (!title) {
-        const t = translations[currentLanguage];
-        alert(t.titleRequired);
-        return;
-    }
-    
-    if (!dueDate || !dueTime) {
-        const t = translations[currentLanguage];
-        alert(t.dueDateRequired);
-        return;
-    }
-    
-    const dueDatetime = new Date(`${dueDate}T${dueTime}`);
-    
-    // Get selected category
-    const selectedCategoryOption = document.querySelector('.category-option.active');
-    const category = selectedCategoryOption ? selectedCategoryOption.dataset.category : null;
-    
-    const taskData = {
-        id: editingTaskId || Date.now(), // Use timestamp as ID for demo
-        title,
-        description,
-        due_date: dueDatetime.toISOString(),
-        priority,
-        category: category || null,
-        is_completed: false
-    };
-    
-    if (editingTaskId) {
-        // Update existing task
-        const taskIndex = allTasks.findIndex(t => t.id === editingTaskId);
-        if (taskIndex !== -1) {
-            allTasks[taskIndex] = { ...allTasks[taskIndex], ...taskData };
-        }
-    } else {
-        // Add new task
-        allTasks.push(taskData);
-    }
-    
-    displayTasks();
-    closeModalHandler();
-}
-
-function handleCategoryFormSubmit(e) {
-    e.preventDefault();
-    
-    const name = document.getElementById('categoryName').value.trim();
-    const color = document.getElementById('categoryColor').value;
-    const selectedIcon = document.querySelector('.icon-option.active');
-    const icon = selectedIcon ? selectedIcon.dataset.icon : 'fas fa-folder';
-    
-    if (!name) {
-        const t = translations[currentLanguage];
-        alert(t.categoryNameRequired);
-        return;
-    }
-    
-    const newCategory = {
-        id: name.toLowerCase().replace(/\s+/g, '-'),
-        name,
-        color,
-        icon
-    };
-    
-    allCategories.push(newCategory);
-    saveCategories();
-    updateCategorySidebar();
-    updateCategorySelector();
-    closeCategoryModalHandler();
-}
-
-function updateCategoryManageList() {
-    if (!categoryManageList) return;
-    
-    categoryManageList.innerHTML = allCategories.map(cat => `
-        <div class="category-manage-item">
-            <div class="category-icon" style="background-color: ${cat.color}">
-                <i class="${cat.icon}" style="color: white"></i>
-            </div>
-            <span class="category-name">${cat.name}</span>
-            <div class="category-manage-actions">
-                <button class="category-manage-btn category-delete-btn" onclick="deleteCategory('${cat.id}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function deleteCategory(categoryId) {
-    const t = translations[currentLanguage];
-    if (confirm(t.deleteConfirm)) {
-        allCategories = allCategories.filter(cat => cat.id !== categoryId);
-        saveCategories();
-        updateCategorySidebar();
-        updateCategorySelector();
-        updateCategoryManageList();
-        displayTasks();
-    }
 }
 
 // Update sort buttons
@@ -849,10 +273,6 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     localStorage.setItem('theme', currentTheme);
     updateThemeIcon();
-    
-    // Update background colors for the new theme
-    document.body.classList.toggle('dark-mode', currentTheme === 'dark');
-    updateBackgroundForTheme();
 }
 
 // Update theme icon
@@ -868,9 +288,6 @@ async function toggleLanguage() {
     localStorage.setItem('language', currentLanguage);
     updateLanguageIndicator();
     updateLanguage();
-    
-    // Update category sidebar to fix translation issue
-    updateCategorySidebar();
     
     // Translate existing tasks
     await translateTasks();
@@ -975,6 +392,7 @@ function updateLanguage() {
             option.textContent = option.dataset[`text${textKey.charAt(0).toUpperCase() + textKey.slice(1)}`];
         }
     });
+    
     
     // Redisplay tasks to update language
     displayTasks();
@@ -1138,11 +556,6 @@ function filterTasks(tasks) {
             break;
     }
     
-    // Category filter
-    if (selectedCategory) {
-        filteredTasks = filteredTasks.filter(task => task.category === selectedCategory);
-    }
-    
     return filteredTasks;
 }
 
@@ -1239,10 +652,126 @@ function createTaskHTML(task) {
     `;
 }
 
+// Open modal for adding or editing task
+function openModal(task = null) {
+    const t = translations[currentLanguage];
+    editingTaskId = task ? task.id : null;
+    
+    if (task) {
+        modalTitle.textContent = t.editReminder;
+        submitBtn.textContent = t.update;
+        
+        // Fill form with task data
+        document.getElementById('title').value = task.title;
+        document.getElementById('description').value = task.description || '';
+        document.querySelector(`input[name="priority"][value="${task.priority}"]`).checked = true;
+        updateCategorySelector();
+        
+        // Format date and time for inputs
+        const dueDate = new Date(task.due_date);
+        document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+        document.getElementById('dueTime').value = dueDate.toTimeString().slice(0, 5);
+        
+        // Handle repeat settings if available
+        if (task.repeat_type) {
+            repeatToggle.checked = true;
+            repeatOptions.style.display = 'block';
+            
+            document.querySelectorAll('.repeat-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-repeat="${task.repeat_type}"]`).classList.add('active');
+            
+            if (task.repeat_type === 'custom') {
+                customRepeat.style.display = 'block';
+                document.getElementById('customInterval').value = task.repeat_interval || 1;
+                document.getElementById('customUnit').value = task.repeat_unit || 'days';
+            }
+        }
+    } else {
+        modalTitle.textContent = t.newReminder;
+        submitBtn.textContent = t.create;
+        taskForm.reset();
+        document.querySelector('input[name="priority"][value="medium"]').checked = true;
+        repeatOptions.style.display = 'none';
+        customRepeat.style.display = 'none';
+        updateCategorySelector();
+        
+        // Set default date to today
+        const today = new Date();
+        document.getElementById('dueDate').value = today.toISOString().split('T')[0];
+        document.getElementById('dueTime').value = '12:00';
+    }
+    
+    taskModal.classList.add('show');
+    document.getElementById('title').focus();
+}
+
+// Close modal
+function closeModalHandler() {
+    taskModal.classList.remove('show');
+    taskForm.reset();
+    editingTaskId = null;
+    repeatOptions.style.display = 'none';
+    customRepeat.style.display = 'none';
+}
+
+// Close category modal
+function closeCategoryModalHandler() {
+    categoryModal.classList.remove('show');
+    document.getElementById('categoryForm').reset();
+    document.querySelectorAll('.icon-option').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.icon-option').classList.add('active');
+}
+
+// Handle category form submission
+async function handleCategoryFormSubmit(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('categoryName').value.trim();
+    const color = document.getElementById('categoryColor').value;
+    const icon = document.querySelector('.icon-option.active').dataset.icon;
+    
+    if (!name) {
+        showError('Kategorie-Name ist erforderlich.');
+        return;
+    }
+    
+    const newCategory = {
+        id: name.toLowerCase().replace(/\s+/g, '-'),
+        name: name,
+        color: color,
+        icon: icon
+    };
+    
+    // Add new category to the list
+    allCategories.push(newCategory);
+    
+    // Save categories to localStorage
+    saveCategories();
+    
+    // Update category selects
+    updateCategorySelects();
+    
+    // Close the modal
+    closeCategoryModalHandler();
+    
+    // Update all category displays
+    updateCategorySidebar();
+    updateCategorySelector();
+}
+
+// DOM Elements for Categories
+const categoriesList = document.getElementById('categoriesList');
+const categorySelector = document.getElementById('categorySelector');
+const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+const categoryManageModal = document.getElementById('categoryManageModal');
+const closeCategoryManageModal = document.getElementById('closeCategoryManageModal');
+const categoryManageList = document.getElementById('categoryManageList');
+const addNewCategoryBtn = document.getElementById('addNewCategoryBtn');
+
+let selectedCategory = null;
+
 // Update category sidebar
 function updateCategorySidebar() {
-    if (!categoriesList) return;
-    
     categoriesList.innerHTML = `
         <div class="category-item all-categories ${!selectedCategory ? 'active' : ''}" data-category="">
             <i class="fas fa-layer-group"></i>
@@ -1270,8 +799,6 @@ function updateCategorySidebar() {
 
 // Update visual category selector in task form
 function updateCategorySelector() {
-    if (!categorySelector) return;
-    
     const taskCategory = editingTaskId ? allTasks.find(t => t.id === editingTaskId)?.category : null;
     
     categorySelector.innerHTML = `
@@ -1301,10 +828,302 @@ function updateCategorySelector() {
         });
     });
 
-    const addCategoryBtn = document.getElementById('addCategoryBtn');
-    if (addCategoryBtn) {
-        addCategoryBtn.addEventListener('click', () => {
-            categoryModal.classList.add('show');
+    document.getElementById('addCategoryBtn').addEventListener('click', () => {
+        categoryModal.classList.add('show');
+    });
+}
+
+// Update category management list
+function updateCategoryManageList() {
+    categoryManageList.innerHTML = allCategories.map(cat => `
+        <div class="category-manage-item">
+            <div class="category-icon" style="background-color: ${cat.color}">
+                <i class="${cat.icon}" style="color: white"></i>
+            </div>
+            <span class="category-name">${cat.name}</span>
+            <div class="category-manage-actions">
+                <button class="category-manage-btn category-edit-btn" data-category="${cat.id}">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="category-manage-btn category-delete-btn" data-category="${cat.id}">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    // Add click handlers for edit and delete buttons
+    document.querySelectorAll('.category-edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = allCategories.find(c => c.id === btn.dataset.category);
+            if (category) {
+                editCategory(category);
+            }
         });
+    });
+
+    document.querySelectorAll('.category-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = allCategories.find(c => c.id === btn.dataset.category);
+            if (category && confirm(currentLanguage === 'de' ? 
+                `Möchten Sie die Kategorie "${category.name}" wirklich löschen?` : 
+                `Are you sure you want to delete the category "${category.name}"?`)) {
+                deleteCategory(category.id);
+            }
+        });
+    });
+}
+
+// Edit category
+function editCategory(category) {
+    document.getElementById('categoryName').value = category.name;
+    document.getElementById('categoryColor').value = category.color;
+    document.querySelectorAll('.icon-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.icon === category.icon);
+    });
+    
+    categoryModal.classList.add('show');
+    categoryManageModal.classList.remove('show');
+}
+
+// Delete category
+function deleteCategory(categoryId) {
+    allCategories = allCategories.filter(c => c.id !== categoryId);
+    saveCategories();
+    
+    // Update tasks that used this category
+    allTasks.forEach(task => {
+        if (task.category === categoryId) {
+            task.category = null;
+        }
+    });
+    
+    updateCategorySidebar();
+    updateCategoryManageList();
+    displayTasks();
+}
+
+// Event Listeners for Category Management
+manageCategoriesBtn.addEventListener('click', () => {
+    categoryManageModal.classList.add('show');
+    updateCategoryManageList();
+});
+
+closeCategoryManageModal.addEventListener('click', () => {
+    categoryManageModal.classList.remove('show');
+});
+
+addNewCategoryBtn.addEventListener('click', () => {
+    categoryModal.classList.add('show');
+    categoryManageModal.classList.remove('show');
+});
+
+
+// Get selected category from visual selector
+function getSelectedCategory() {
+    const activeOption = document.querySelector('.category-option.active');
+    return activeOption ? activeOption.dataset.category : '';
+}
+
+// Initialize categories
+document.addEventListener('DOMContentLoaded', function() {
+    updateCategorySidebar();
+    updateCategorySelector();
+});
+
+// Handle color preset selection
+document.querySelectorAll('.color-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('categoryColor').value = btn.dataset.color;
+        document.querySelectorAll('.color-preset').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
+// Handle icon selection
+document.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.icon-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
+
+// Handle form submission
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    const t = translations[currentLanguage];
+    
+    const dueDateValue = document.getElementById('dueDate').value;
+    const dueTimeValue = document.getElementById('dueTime').value;
+    
+    // Validate and parse the date
+    let parsedDate = null;
+    if (dueDateValue && dueTimeValue) {
+        try {
+            parsedDate = new Date(`${dueDateValue}T${dueTimeValue}`);
+            if (isNaN(parsedDate.getTime())) {
+                throw new Error('Invalid date format');
+            }
+        } catch (dateError) {
+            showError(t.invalidDate);
+            return;
+        }
     }
+    
+    const selectedPriority = document.querySelector('input[name="priority"]:checked');
+    
+    const taskData = {
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('description').value.trim() || null,
+        due_date: parsedDate ? parsedDate.toISOString() : null,
+        priority: selectedPriority ? selectedPriority.value : 'medium',
+        category: getSelectedCategory() || null,
+        is_completed: false
+    };
+
+    // Handle repeat settings
+    if (repeatToggle.checked) {
+        const activeRepeatBtn = document.querySelector('.repeat-btn.active');
+        if (activeRepeatBtn) {
+            taskData.repeat_type = activeRepeatBtn.dataset.repeat;
+            
+            if (taskData.repeat_type === 'custom') {
+                taskData.repeat_interval = parseInt(document.getElementById('customInterval').value) || 1;
+                taskData.repeat_unit = document.getElementById('customUnit').value;
+            }
+        }
+    }
+
+    if (!taskData.title) {
+        showError(t.titleRequired);
+        return;
+    }
+
+    if (!taskData.due_date) {
+        showError(t.dueDateRequired);
+        return;
+    }
+
+    try {
+        let response;
+        if (editingTaskId) {
+            // Update existing task
+            response = await fetch(`${API_BASE_URL}/tasks/${editingTaskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(taskData)
+            });
+        } else {
+            // Create new task
+            response = await fetch(`${API_BASE_URL}/tasks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(taskData)
+            });
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+        }
+
+        closeModalHandler();
+        loadTasks(); // Reload tasks to show the changes
+    } catch (error) {
+        console.error('Error saving task:', error);
+        showError(t.errorSaving + ' ' + error.message);
+    }
+}
+
+// Toggle task completion status
+async function toggleTaskCompletion(taskId, isCompleted) {
+    const t = translations[currentLanguage];
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                is_completed: isCompleted
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        loadTasks(); // Reload tasks to reflect the change
+    } catch (error) {
+        console.error('Error updating task:', error);
+        showError(t.errorUpdating);
+        loadTasks(); // Reload to revert any visual changes
+    }
+}
+
+// Edit task
+function editTask(taskId) {
+    const task = allTasks.find(t => t.id === taskId);
+    if (task) {
+        openModal(task);
+    }
+}
+
+// Delete a task
+async function deleteTask(taskId) {
+    const t = translations[currentLanguage];
+    
+    if (!confirm(t.deleteConfirm)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        loadTasks(); // Reload tasks to remove the deleted one
+    } catch (error) {
+        console.error('Error deleting task:', error);
+        showError(t.errorDeleting);
+    }
+}
+
+// Utility functions
+function showLoading() {
+    const t = translations[currentLanguage];
+    taskList.innerHTML = `<div class="loading">${t.loading}</div>`;
+}
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error';
+    errorDiv.textContent = message;
+    
+    // Remove existing error messages
+    const existingErrors = document.querySelectorAll('.error');
+    existingErrors.forEach(error => error.remove());
+    
+    // Add error message to body
+    document.body.appendChild(errorDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
