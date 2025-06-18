@@ -1,14 +1,19 @@
 Wie unterstützt uns Scrum?
+
 --> Scrum hilft uns dabei, unsere Ideen zu strukturieren und das Projekt effizient zu organisieren.
 Durch die klare Rollenverteilung konnten wir Aufgaben gezielt einzelnen Teammitgliedern oder Bereichen zuweisen.
 Die iterative Vorgehensweise mit regelmäßigen Sprints erleichtert es uns, Fortschritte zu überprüfen und flexibel auf Veränderungen zu reagieren.
 
+
 Wie behindert uns Scrum?
+
 -->Ein Nachteil war das Fehlen eines zentralen Kommunikationspunkts, etwa eines "Diskussionsforums".
 Dadurch kam es vereinzelt zu Missverständnissen oder Informationen wurden an die falsche Person weitergeleitet.
 Auch spontane Absprachen sind in Scrum oft schwieriger, wenn sie nicht explizit im Sprint-Planning vorgesehen sind.
 
+
 Wo stehen wir aktuell?
+
 -->Wir haben die wichtigsten Features (P0-Funktionen) unseres Taskmanagers erfolgreich umgesetzt. 
 Der Taskmanager bietet bereits Funktionen wie:
 
@@ -18,31 +23,105 @@ Der Taskmanager bietet bereits Funktionen wie:
 -Übersicht über offene und erledigte Tasks
 -Damit steht die funktionale Grundstruktur des Projekts
 
+
 Was machen wir als Nächstes?
+
+-->Als Nächstes konzentrieren wir uns auf zwei zentrale Bereiche: Funktionserweiterung und Plattform-Umsetzung.
+ Funktionserweiterung:
+Wir möchten den Taskmanager um weitere sinnvolle Features ergänzen, die aktuell noch fehlen, aber bereits geplant sind.
+Dazu zählen unter anderem:
+
+       - Aufgaben kategorisieren (z. B. farbliche Labels oder Tags)
+       - Erinnerungsfunktionen oder Push-Benachrichtigungen bei nahenden Deadlines
+       - Möglichkeit zur Zusammenarbeit (z. B. Aufgaben teilen oder zuweisen)
+       -  Kalender-Ansicht zur besseren Zeitplanung
+
+ Diese Funktionen sollen den Taskmanager nicht nur umfassender, sondern auch alltagstauglicher machen – besonders für Nutzer, die mit vielen parallelen  Aufgaben arbeiten.
+
+Design & User Experience:
+Im weiteren Verlauf werden wir verstärkt an der optischen Gestaltung arbeiten, um die Benutzeroberfläche intuitiver und ansprechender zu gestalten.
+Dazu zählen:
+
+       - UI/UX-Verbesserungen
+       - Konsistentes Designsystem
+       - Mobile-First-Gestaltung für die spätere App
+
+    iOS-App-Umsetzung:
+    Ein großes Ziel ist die Umsetzung als native iOS-App. Dadurch soll unser Taskmanager mobil nutzbar werden und auf Apple-Geräten zur Verfügung stehen.  Hierzu beginnen wir in Kürze mit der Planung der App-Architektur und der Auswahl geeigneter Frameworks (z. B. SwiftUI oder React Native).
+
+    Feinschliff & Vorbereitung auf Veröffentlichung:
+    In einem letzten Schritt werden wir letzte Bugs beseitigen, die Codebasis aufräumen und alles dokumentieren, um den Taskmanager potenziell veröffentlichen oder weiterentwickeln zu können.
+
 -->Im nächsten Schritt konzentrieren wir uns auf die Implementierung zusätzlicher, essenzieller Funktionen.
 Danach wenden wir uns weniger priorisierten Aufgaben (P1 und P2) zu. 
 Langfristig ist die Umsetzung unseres Taskmanagers als iOS-App geplant, was die Benutzerfreundlichkeit und Verfügbarkeit erhöhen soll.
 
+
 Was ist in den vergangenen Sprints gut gelaufen?
+
 -->Wir konnten fast alle unserer Ideen umsetzen und haben unser Produkt laufend verbessert. 
 Besonders positiv war die kreative Zusammenarbeit im Team – viele innovative Features sind so entstanden. 
 Der Taskmanager ist zwar noch nicht vollständig ausgereift, aber bereits funktional und einsatzbereit.
 
+
 Wo stehen wir gerade und was kommt als Nächstes?
+
 -->Der aktuelle Stand umfasst alle von uns priorisierten P0-Funktionen, die auch zuverlässig funktionieren. 
 Wir arbeiten bereits an ersten P1-Funktionen. In den nächsten Sprints möchten wir uns verstärkt auf
 das Design und die Benutzeroberfläche konzentrieren, um das Produkt benutzerfreundlich und optisch ansprechend zu gestalten.
 Ziel ist es, in absehbarer Zeit eine veröffentlichungsreife Version präsentieren zu können.
 
+
 Wie hat sich die Komplexität in unserem Projekt entwickelt?
+
 -->Mit zunehmendem Fortschritt ist auch die Komplexität des Projekts gestiegen.
 Anfangs lag der Fokus auf einer funktionierenden Grundstruktur. Sobald diese stand, sind wir tiefer in technische Details eingestiegen. 
 Neue Features bringen zusätzliche Anforderungen an Codequalität, Benutzerführung und Testbarkeit mit sich.
 
+
 Wie gehen wir mit dieser Komplexität um?
+
 -->Wir begegnen der steigenden Komplexität mit einer schrittweisen Herangehensweise. 
 Durch strukturierte Planung, regelmäßige Reviews und klare Aufgabenteilung behalten wir den Überblick. 
-Außerdem helfen uns Versionskontrolle (z. B. über GitHub) und Dokumentation dabei, auch bei wachsender Funktionalität effizient weiterzuarbeiten.
+Außerdem helfen uns Versionskontrolle (z. B. über GitHub) und Dokumentation dabei, auch bei wachsender Funktionalität effizient weiterzuarbeiten. 
 
-Wie gehen wir damit um?
---> 
+
+Welche User-Stories haben wir erfolgreich umgesetzt?
+
+-->Wir konnten eine Vielzahl an zentralen User-Stories erfolgreich umsetzen, insbesondere jene mit hoher Priorität (P0). Dazu gehören unter anderem:
+
+-Als Benutzer möchte ich eine neue Aufgabe erstellen können, damit ich meine To-Dos erfassen kann.
+-Als Benutzer möchte ich Aufgaben priorisieren können (z. B. P0 bis P2), um den Fokus auf wichtige Aufgaben zu legen.
+-Als Benutzer möchte ich eine Deadline für Aufgaben setzen können, um meine Zeit besser zu planen.
+-Als Benutzer möchte ich Aufgaben als „erledigt“ markieren können, damit ich den Überblick über offene und abgeschlossene Aufgaben behalte.
+-Als Benutzer möchte ich eine übersichtliche Liste meiner Aufgaben sehen, um meine aktuellen Aufgaben einfach verwalten zu können.
+
+Diese Kern-Features bilden die funktionale Basis unseres Taskmanagers. Sie sind implementiert, getestet und im praktischen Einsatz gut nutzbar.
+
+
+Welche User-Stories mussten wir zurückstellen oder konnten wir nicht umsetzen?
+
+-->Einige User-Stories mit niedrigerer Priorität (P2 oder optional) mussten wir aufgrund von Zeit- oder Ressourcengründen vorerst zurückstellen. Beispiele dafür sind:
+
+-Als Benutzer möchte ich Aufgaben mit anderen teilen oder zuweisen können, um in Teams gemeinsam an Aufgaben zu arbeiten.
+-Als Benutzer möchte ich Benachrichtigungen erhalten, wenn eine Deadline näher rückt.
+-Als Benutzer möchte ich Aufgaben farblich kennzeichnen oder kategorisieren, um noch schneller zu erkennen, worum es geht.
+-Als Benutzer möchte ich einen Kalender-View haben, um meine Aufgaben auch visuell über die Zeit verteilt zu sehen.
+
+Diese Features waren zwar geplant, konnten aber nicht alle vollständig umgesetzt werden. Sie sind aber teilweise bereits in Planung oder in einer frühen Entwicklungsphase.
+
+
+Wie sieht unsere App am Ende der Projektlaufzeit aus?
+
+-->Am Ende der Projektlaufzeit präsentiert sich unsere App als funktionaler, benutzerfreundlicher Taskmanager mit allen zentralen Grundfunktionen. Die Oberfläche ist übersichtlich und einfach zu bedienen. Die wichtigsten Features (Erstellen, Bearbeiten, Priorisieren, Deadlines, Status ändern, Übersicht) funktionieren zuverlässig. Das Design ist bereits auf Benutzerfreundlichkeit ausgelegt, auch wenn die optische Verfeinerung und Detailgestaltung noch finalisiert wird.
+
+Die App bildet somit ein solides Grundgerüst, das als Basis für weitere Entwicklungen dient – insbesondere für die geplante Umsetzung als native iOS-App.
+
+
+Wie gut passt unser finales Produkt zu der eingangs formulierten Produkt-Vision?
+
+-->Unsere ursprüngliche Produkt-Vision war es, einen schlanken, klar strukturierten und effektiven Taskmanager zu entwickeln, der sich besonders auf das Wesentliche konzentriert: Aufgabenverwaltung, Priorisierung und Übersicht.
+
+Diese Vision haben wir im Wesentlichen erreicht. Die App erfüllt ihren Zweck zuverlässig, ohne überladen zu sein. Der Fokus auf Funktionalität vor Komplexität spiegelt sich im gesamten Aufbau wider. Auch wenn einige Zusatzfeatures fehlen, bleibt die Kernidee vollständig erhalten.
+
+Unser finales Produkt ist somit ein sehr guter erster Prototyp, der bereits produktiv genutzt werden kann und gleichzeitig die Grundlage für zukünftige Erweiterungen bildet.
