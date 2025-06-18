@@ -1,36 +1,48 @@
 Wie unterstützt uns Scrum?
---> Scrum hilft uns dabei, unsere Ideen zu strukturieren und das Projekt effizient zu organisieren. Durch die klare Rollenverteilung konnten wir Aufgaben gezielt einzelnen Teammitgliedern oder Bereichen zuweisen. Die iterative Vorgehensweise mit regelmäßigen Sprints erleichtert es uns, Fortschritte zu überprüfen und flexibel auf Veränderungen zu reagieren.
+--> Scrum hilft uns dabei, unsere Ideen zu strukturieren und das Projekt effizient zu organisieren.
+Durch die klare Rollenverteilung konnten wir Aufgaben gezielt einzelnen Teammitgliedern oder Bereichen zuweisen.
+Die iterative Vorgehensweise mit regelmäßigen Sprints erleichtert es uns, Fortschritte zu überprüfen und flexibel auf Veränderungen zu reagieren.
 
 Wie behindert uns Scrum?
--->Ein Nachteil war das Fehlen eines zentralen Kommunikationspunkts, etwa eines "Diskussionsforums". Dadurch kam es vereinzelt zu Missverständnissen oder Informationen wurden an die falsche Person weitergeleitet. Auch spontane Absprachen sind in Scrum oft schwieriger, wenn sie nicht explizit im Sprint-Planning vorgesehen sind.
+-->Ein Nachteil war das Fehlen eines zentralen Kommunikationspunkts, etwa eines "Diskussionsforums".
+Dadurch kam es vereinzelt zu Missverständnissen oder Informationen wurden an die falsche Person weitergeleitet.
+Auch spontane Absprachen sind in Scrum oft schwieriger, wenn sie nicht explizit im Sprint-Planning vorgesehen sind.
 
 Wo stehen wir aktuell?
--->Wir haben die wichtigsten Features (P0-Funktionen) unseres Taskmanagers erfolgreich umgesetzt. Der Taskmanager bietet bereits Funktionen wie:
+-->Wir haben die wichtigsten Features (P0-Funktionen) unseres Taskmanagers erfolgreich umgesetzt. 
+Der Taskmanager bietet bereits Funktionen wie:
 
-    Aufgaben erstellen und abschließen
-
-    Deadlines setzen
-
-    Aufgaben priorisieren
-
-    Übersicht über offene und erledigte Tasks
-
-Damit steht die funktionale Grundstruktur des Projekts.
+-Aufgaben erstellen und abschließen
+-Deadlines setzen
+-Aufgaben priorisieren
+-Übersicht über offene und erledigte Tasks
+-Damit steht die funktionale Grundstruktur des Projekts
 
 Was machen wir als Nächstes?
--->Im nächsten Schritt konzentrieren wir uns auf die Implementierung zusätzlicher, essenzieller Funktionen. Danach wenden wir uns weniger priorisierten Aufgaben (P1 und P2) zu. Langfristig ist die Umsetzung unseres Taskmanagers als iOS-App geplant, was die Benutzerfreundlichkeit und Verfügbarkeit erhöhen soll.
+-->Im nächsten Schritt konzentrieren wir uns auf die Implementierung zusätzlicher, essenzieller Funktionen.
+Danach wenden wir uns weniger priorisierten Aufgaben (P1 und P2) zu. 
+Langfristig ist die Umsetzung unseres Taskmanagers als iOS-App geplant, was die Benutzerfreundlichkeit und Verfügbarkeit erhöhen soll.
 
 Was ist in den vergangenen Sprints gut gelaufen?
--->Wir konnten fast alle unserer Ideen umsetzen und haben unser Produkt laufend verbessert. Besonders positiv war die kreative Zusammenarbeit im Team – viele innovative Features sind so entstanden. Der Taskmanager ist zwar noch nicht vollständig ausgereift, aber bereits funktional und einsatzbereit.
+-->Wir konnten fast alle unserer Ideen umsetzen und haben unser Produkt laufend verbessert. 
+Besonders positiv war die kreative Zusammenarbeit im Team – viele innovative Features sind so entstanden. 
+Der Taskmanager ist zwar noch nicht vollständig ausgereift, aber bereits funktional und einsatzbereit.
 
 Wo stehen wir gerade und was kommt als Nächstes?
--->Der aktuelle Stand umfasst alle von uns priorisierten P0-Funktionen, die auch zuverlässig funktionieren. Wir arbeiten bereits an ersten P1-Funktionen. In den nächsten Sprints möchten wir uns verstärkt auf das Design und die Benutzeroberfläche konzentrieren, um das Produkt benutzerfreundlich und optisch ansprechend zu gestalten. Ziel ist es, in absehbarer Zeit eine veröffentlichungsreife Version präsentieren zu können.
+-->Der aktuelle Stand umfasst alle von uns priorisierten P0-Funktionen, die auch zuverlässig funktionieren. 
+Wir arbeiten bereits an ersten P1-Funktionen. In den nächsten Sprints möchten wir uns verstärkt auf
+das Design und die Benutzeroberfläche konzentrieren, um das Produkt benutzerfreundlich und optisch ansprechend zu gestalten.
+Ziel ist es, in absehbarer Zeit eine veröffentlichungsreife Version präsentieren zu können.
 
 Wie hat sich die Komplexität in unserem Projekt entwickelt?
--->Mit zunehmendem Fortschritt ist auch die Komplexität des Projekts gestiegen. Anfangs lag der Fokus auf einer funktionierenden Grundstruktur. Sobald diese stand, sind wir tiefer in technische Details eingestiegen. Neue Features bringen zusätzliche Anforderungen an Codequalität, Benutzerführung und Testbarkeit mit sich.
+-->Mit zunehmendem Fortschritt ist auch die Komplexität des Projekts gestiegen.
+Anfangs lag der Fokus auf einer funktionierenden Grundstruktur. Sobald diese stand, sind wir tiefer in technische Details eingestiegen. 
+Neue Features bringen zusätzliche Anforderungen an Codequalität, Benutzerführung und Testbarkeit mit sich.
 
 Wie gehen wir mit dieser Komplexität um?
--->Wir begegnen der steigenden Komplexität mit einer schrittweisen Herangehensweise. Durch strukturierte Planung, regelmäßige Reviews und klare Aufgabenteilung behalten wir den Überblick. Außerdem helfen uns Versionskontrolle (z. B. über GitHub) und Dokumentation dabei, auch bei wachsender Funktionalität effizient weiterzuarbeiten.
+-->Wir begegnen der steigenden Komplexität mit einer schrittweisen Herangehensweise. 
+Durch strukturierte Planung, regelmäßige Reviews und klare Aufgabenteilung behalten wir den Überblick. 
+Außerdem helfen uns Versionskontrolle (z. B. über GitHub) und Dokumentation dabei, auch bei wachsender Funktionalität effizient weiterzuarbeiten.
 
 Wie gehen wir damit um?
 --> 
