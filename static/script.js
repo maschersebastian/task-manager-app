@@ -407,7 +407,7 @@ function setupBackgroundCustomization() {
             updateBackgroundTypeUI('color');
             
             // Reset active presets
-            document.querySelectorAll('.bg-preset, .gradient-preset, .image-preset').forEach(preset => {
+            document.querySelectorAll('.bg-preset, .gradient-preset').forEach(preset => {
                 preset.classList.remove('active');
             });
             
@@ -422,8 +422,26 @@ function setupBackgroundCustomization() {
     // Handle background type selection
     document.querySelectorAll('.bg-type-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            // Remove active class from all buttons
+            document.querySelectorAll('.bg-type-btn').forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            btn.classList.add('active');
+            
             currentBgType = btn.dataset.type;
-            updateBackgroundTypeUI(currentBgType);
+            
+            // Show/hide options based on type using CSS classes
+            const colorOptions = document.getElementById('colorOptions');
+            const gradientOptions = document.getElementById('gradientOptions');
+            
+            if (colorOptions && gradientOptions) {
+                if (currentBgType === 'color') {
+                    colorOptions.classList.add('active');
+                    gradientOptions.classList.remove('active');
+                } else if (currentBgType === 'gradient') {
+                    colorOptions.classList.remove('active');
+                    gradientOptions.classList.add('active');
+                }
+            }
         });
     });
 
@@ -475,25 +493,6 @@ function setupBackgroundCustomization() {
         });
     });
 
-    // Image presets
-    document.querySelectorAll('.image-preset').forEach(preset => {
-        preset.addEventListener('click', () => {
-            document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
-            preset.classList.add('active');
-            
-            const imageName = preset.dataset.image;
-            
-            const settings = {
-                type: 'image',
-                imageName: imageName,
-                preset: true
-            };
-            
-            applyImageBackground(imageName);
-            localStorage.setItem('backgroundType', 'image');
-            localStorage.setItem('backgroundSettings', JSON.stringify(settings));
-        });
-    });
 
     // Handle background form submission
     backgroundForm.addEventListener('submit', (e) => {
@@ -524,12 +523,6 @@ function loadSavedBackgroundSettings() {
             const preset = document.querySelector(`.gradient-preset[data-light-start="${savedSettings.lightStart}"]`);
             if (preset) {
                 document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
-                preset.classList.add('active');
-            }
-        } else if (savedSettings.type === 'image' && savedSettings.imageName) {
-            const preset = document.querySelector(`.image-preset[data-image="${savedSettings.imageName}"]`);
-            if (preset) {
-                document.querySelectorAll('.image-preset').forEach(p => p.classList.remove('active'));
                 preset.classList.add('active');
             }
         }
@@ -566,9 +559,19 @@ function updateBackgroundTypeUI(type) {
         btn.classList.toggle('active', btn.dataset.type === type);
     });
 
-    document.getElementById('colorOptions').style.display = type === 'color' ? 'block' : 'none';
-    document.getElementById('gradientOptions').style.display = type === 'gradient' ? 'block' : 'none';
-    document.getElementById('imageOptions').style.display = type === 'image' ? 'block' : 'none';
+    // Show only the options for the selected type using CSS classes
+    const colorOptions = document.getElementById('colorOptions');
+    const gradientOptions = document.getElementById('gradientOptions');
+    
+    if (colorOptions && gradientOptions) {
+        if (type === 'color') {
+            colorOptions.classList.add('active');
+            gradientOptions.classList.remove('active');
+        } else if (type === 'gradient') {
+            colorOptions.classList.remove('active');
+            gradientOptions.classList.add('active');
+        }
+    }
 }
 
 // Update gradient preview

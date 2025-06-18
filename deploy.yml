@@ -1,0 +1,21 @@
+name: FTP Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.world4you.com
+          username: ftp3131287
+          password: ftp-Sebastian#2006
+          server-dir: /  # oder entsprechender Pfad deines Webspaces
